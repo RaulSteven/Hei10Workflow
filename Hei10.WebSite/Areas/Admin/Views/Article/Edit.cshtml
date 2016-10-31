@@ -1,0 +1,206 @@
+﻿@model Hei10.WebSite.Areas.Admin.Models.ArticleModel 
+<script type="text/javascript">
+    function doc_upload_success(file, data) {
+        var json = $.parseJSON(data);
+        $(this).bjuiajax('ajaxDone', json);
+        if (json[BJUI.keys.statusCode] == BJUI.statusCode.ok) {
+            var pic = $('#Pic').val();
+            if (pic != "") {
+                pic += ",";
+            }
+            $('#Pic').val(pic + json.filePath);
+            var html = '<div style="width: 120px; height: 120px; display:inline; margin-left: 20px;"><img src="' + json.imgPath + '" alt="" width="100" style="margin-top: 10px;"/><a href="javascript:;" data-value="' + json.filePath + '" onclick="javascript: doDeleteImg(this);" class="pic-list-a" style="margin-left: -28px;"><img src="/Res/home/images/icon-close.png" alt=""></a></div> '
+            if ($('#doc_span_pic').find('img').length < 1) {
+                $('#doc_span_pic').html(html);
+            } else {
+                $('#doc_span_pic').append(html);
+            }
+        }
+    }
+
+    var doDeleteImg = function (btn) {
+        var li = $(btn).parent();
+        li.fadeOut(500, function () {
+            li.remove();
+            var picList = [];
+            $('#doc_span_pic .pic-list-a').each(function (i, e) {
+                var pic = $(e).attr('data-value');
+                if (pic) {
+                    picList.push(pic);
+                }
+            });
+            $('#Pic').val(picList.join(','));
+            delete picList;
+            picList = null;
+        });
+
+
+    }
+
+    var tabId = '@Request["tabId"]';
+    function article_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span>').show();
+            }
+        } else {
+            $(this)
+                .bjuiajax('ajaxDone', json) // 信息提示
+                .navtab('closeCurrentTab') //关闭当前窗口
+                .navtab('switchTab', tabId)// 刷新列表页
+                .navtab('reloadForm',false, tabId);// 刷新列表页
+        }
+
+    }
+
+    function edit_NodeCheck(e, treeId, treeNode) {
+        var zTree = $.fn.zTree.getZTreeObj(treeId),
+            nodes = zTree.getCheckedNodes(true);
+        var ids = '', names = ''; 
+        for (var i = 0; i < nodes.length; i++) {
+            ids += ',' + nodes[i].id;
+            names += ',' + nodes[i].name;
+        }
+        if (ids.length > 0) {
+            ids = ids.substr(1), names = names.substr(1);
+        }
+        var $from = $('#' + treeId).data('fromObj');
+        $from.val("");
+        $('#ClassifyName').focusout();
+        if ($from && $from.length) {
+            $from.val(names);
+            $('#ClassifyId').val(ids);
+        }
+        $('#ClassifyName').focusout();
+    }
+
+    var nodeChecked = function () {
+        var zTree = $.fn.zTree.getZTreeObj("articleClassifySelectEdit");
+        var classifyId = $('#ClassifyId').val();
+        var node = zTree.getNodeByParam("id", classifyId, null);
+        if (node) {
+            zTree.checkNode(node, true, true);
+            $('#ClassifyName').val(node.name);
+        }
+    }
+    $('#ArticleDateTime').val("@(string.Format("{0:yyyy-MM-dd HH:mm:ss}", Model.ArticleDateTime))");
+
+
+
+</script>
+@using (Html.BeginForm("Edit", "Article", FormMethod.Post, new { @data_toggle = "validate", @data_alertmsg = "false", @data_callback = "article_callback", @data_confirm_msg = "确定提交吗？" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    <div class="bjui-pageContent">
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Title)：</label>
+                    @Html.TextBoxFor(m => m.Title, new {@class = "input-lg w500", @data_rule = "required;length[~255];"})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.TitleSub)：</label>
+                    @Html.TextBoxFor(m => m.TitleSub, new { @class = "input-lg w500" })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">所属分类：</label>
+                    @Html.HiddenFor(m => m.ClassifyId) 
+                    @Html.TextBoxFor(m => m.ClassifyName, new { @class = "input-lg", @data_rule = "length[~500]", onclick = "nodeChecked()",@data_toggle="selectztree",@data_tree="#articleClassifySelectEdit",@readonly= "readonly" })
+                    <ul id="articleClassifySelectEdit" class="ztree hide" data-toggle="ztree" data-nodes="articleClassify" data-expand-all="true" data-check-enable="true" data-chk-style="radio" data-radio-type="all" data-on-check="edit_NodeCheck" data-on-click="S_NodeClick"></ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Author)：</label>
+                    @Html.TextBoxFor(m => m.Author, new {@class = "input-lg", @data_rule = "required;length[~50]"})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.PartialViewCode)：</label>
+                    @Html.DropDownList("PartialViewCode", ArticleDetailType.More.GetSList(), "请选择", new { @class = "input-lg", @data_rule = "required;", @placeholder = "显示模板" })  
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.ArticleDateTime)：</label>
+                    @Html.TextBoxFor(m => m.ArticleDateTime, new {@class = "input-lg", @data_toggle = "datepicker", @data_pattern= "yyyy-MM-dd HH:mm:ss", @data_rule = "required;datetime;" })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.ViewCount)：</label>
+                    @Html.TextBoxFor(m => m.ViewCount, new {@class = "input-lg w500", @data_rule = "required;digits;"})
+                </td>
+            </tr>
+            <tr>
+                <td class="h40">
+                    <label for="" class="control-label x85">状态：</label>
+                    <input type="radio" name="CommonStatus" id="CommonStatus-radio1" value="@(CommonStatus.Enabled)" data-toggle="icheck" @(Model.CommonStatus == CommonStatus.Enabled ? "checked=checked" : "") data-rule="checked" data-label="@(CommonStatus.Enabled.GetDescriotion())">
+                    <input type="radio" name="CommonStatus" id="CommonStatus-radio2" value="@(CommonStatus.Disabled)" data-toggle="icheck" @(Model.CommonStatus == CommonStatus.Disabled ? "checked=checked" : "") data-label="@(CommonStatus.Disabled.GetDescriotion())">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Source)：</label>
+                    @Html.TextBoxFor(m => m.Source, new { @class = "input-lg w500", @data_rule = "length[~200];" })
+                </td>
+            </tr>
+            <tr>
+                <td class="h60">
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Pic)：</label>
+                    <div style="display: inline-block; vertical-align: middle;">
+                        <div id="doc_pic_up" data-toggle="upload" data-uploader="@Url.Action("BatchUpload", "Attachment", new {src = TableSource.Articles})"
+                                data-file-size-limit="1024000000"
+                                data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                data-multi="true"
+                                data-auto="true"
+                                data-on-upload-success="doc_upload_success"
+                                data-icon="cloud-upload"></div>
+                        @Html.HiddenFor(m => m.Pic,new { @data_rule = "length[~250];" })
+                    </div>
+                    <div id="doc_span_pic">
+                        @if (!string.IsNullOrEmpty(Model.Pic))
+                        {
+                            var picList = Model.Pic.Split(',').Where(d => !string.IsNullOrEmpty(d)).ToList();
+                            foreach (var item in picList)
+                            {
+                                <div style="width: 120px; height: 120px; display:inline; margin-left: 20px;">
+                                    <img src="@Url.ThumbUrl(item, "100x100")" alt="" width="100" style="margin-top: 10px;"/>
+                                    <a href="javascript:;" data-value="@item" onclick="javascript: doDeleteImg(this);" class="pic-list-a" style="margin-left: -28px;"><img src="/Res/home/images/icon-close.png" alt=""></a>
+                                </div> 
+                            }
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.ArticleContent)：</label>
+                    @Html.TextAreaFor(m => m.ArticleContent, new
+               {
+                   @data_rule = "required;",
+                   @data_toggle="kindeditor",
+                   @data_min_height = "300",
+                   @data_allow_file_manager = "false",
+                   @data_upload_json =Url.Action("KindEditorUpload", "Attachment", new { src = TableSource.Articles }),
+                   @style ="width: 800px;"
+               })
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bjui-pageFooter">
+        <ul>
+            <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+            <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+        </ul>
+    </div>
+}

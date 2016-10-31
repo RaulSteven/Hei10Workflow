@@ -1,0 +1,71 @@
+﻿@model HomeModel
+@{
+    ArticleClassifyListModel leftArticleClassify = Model.LeftArticleClassify;
+    ArticleClassifyListModel centreArticleClassify = Model.CentreArticleClassify;
+    ArticleClassifyListModel rightArticleClassify = Model.RightArticleClassify;
+    var leftUrl = "javascript:;";
+    var leftClassify = "";
+    var leftTitle = "";
+    var leftContent = "";
+    if (leftArticleClassify != null && leftArticleClassify.ArticleClassify != null)
+    {
+        leftClassify = leftArticleClassify.ArticleClassify.Name;
+        var lefthArticle = leftArticleClassify.Article.FirstOrDefault();
+        if (lefthArticle != null)
+        {
+            leftUrl = Url.ArticleDetail(lefthArticle.Id);
+            leftTitle = lefthArticle.Title;
+            leftContent = lefthArticle.ArticleContent.NoHtml().ToEllipsis(100);
+        }
+
+    }
+}
+
+<div class="box-new clearfix">
+    <div class="new-left">
+        <dl>
+            <dt><a href="@leftUrl" title="@leftTitle"><span>@leftClassify</span>@leftTitle</a></dt>
+            <dd><a href="@leftUrl" title="@leftTitle">@leftContent</a></dd>
+        </dl>
+    </div> 
+    <div class="new-right">
+        <ul class="title-list clearfix">
+            @if (centreArticleClassify != null && centreArticleClassify.ArticleClassify != null)
+            {
+                <li class="cur"><a href="javascript:;" title="@(centreArticleClassify.ArticleClassify.Name)">@centreArticleClassify.ArticleClassify.Name</a></li>
+            }
+            @if (rightArticleClassify != null && rightArticleClassify.ArticleClassify != null)
+            {
+                <li><a href="javascript:;" title="@(rightArticleClassify.ArticleClassify.Name)">@rightArticleClassify.ArticleClassify.Name</a></li>
+            }
+        </ul>
+        <div class="content">
+            <!--行业资讯-->
+            <div class="item">
+                <ul class="new-list clearfix">
+                    @if (centreArticleClassify != null && centreArticleClassify.ArticleClassify != null)
+                    {
+                        foreach (var item in centreArticleClassify.Article)
+                        {
+                            <li><span>@string.Format("{0:yyyy.MM.dd}", item.ArticleDateTime)</span><a href="@Url.ArticleDetail(item.Id)" title="@item.Title">@item.Title.ToEllipsis(36)</a></li>
+                        }
+                    } 
+                </ul>
+            </div>
+            <!--行业资讯 end-->
+            <!--通知公告-->
+            <div class="item">
+                <ul class="new-list clearfix">
+                    @if (rightArticleClassify != null && rightArticleClassify.ArticleClassify != null)
+                    {
+                        foreach (var item in rightArticleClassify.Article)
+                        {
+                            <li><span>@string.Format("{0:yyyy.MM.dd}", item.ArticleDateTime)</span><a href="@Url.ArticleDetail(item.Id)" title="@item.Title">@item.Title.ToEllipsis(36)</a></li>
+                        }
+                    }
+                </ul>
+            </div>
+            <!--通知公告 end--> 
+        </div>
+    </div>
+</div>

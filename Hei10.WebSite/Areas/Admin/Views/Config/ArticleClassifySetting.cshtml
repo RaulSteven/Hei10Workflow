@@ -1,0 +1,37 @@
+﻿@model ArticleClassifySetModel
+<script> 
+    function articleClassifySetting_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span>').show();
+            }
+        } else {
+            $(this)
+                .bjuiajax('ajaxDone', json);
+        }
+
+    }
+</script>
+
+@using (Html.BeginForm("ArticleClassifySetting", "Config", FormMethod.Post, new { @data_toggle = "validate", @data_alertmsg = "false", @data_callback = "articleClassifySetting_callback", @data_confirm_msg = "确定提交吗？" }))
+{
+    @Html.AntiForgeryToken() 
+    <div class="bjui-pageContent">
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody> 
+                <tr>
+                    <td>
+                        <label for="" class="control-label x85" style="width: 180px;">@Html.DisplayNameFor(m => m.CaseClassifyId)：</label>
+                        @Html.TextBoxFor(m => m.CaseClassifyId, new { @class = "input-lg w500", @data_rule = "required;digits" })
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>
+    <div class="bjui-pageFooter">
+        <ul>
+            <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+            <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+        </ul>
+    </div>
+}

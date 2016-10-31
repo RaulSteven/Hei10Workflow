@@ -1,0 +1,72 @@
+﻿@using Hei10.Core.Extensions
+@model IPagedList<ConsultBizModel>
+@{
+    SysUser user = ViewBag.CurrUser;
+    List<SelectListItem> select = ViewBag.Select;
+}
+<script type="text/javascript">
+    $(function () { 
+        $('.get-verification-token').attr({ "data-data": "__RequestVerificationToken=" + $('input[name="__RequestVerificationToken"]').val() });
+    })
+</script>
+
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@Url.Action("Index")" method="get">
+        <input type="hidden" name="pageSize" value="@Model.PageSize">
+        <input type="hidden" name="pageCurrent" value="@Model.PageNumber">
+        <input type="hidden" name="tabId" value="@Request["tabId"]" />
+        <input type="hidden" name="orderField" value="@(Request["orderField"]??"Consult.CreateTime")">
+        <input type="hidden" name="orderDirection" value="@(Request["orderDirection"]??"desc")">
+        <div class="bjui-searchBar"> 
+            <label>搜索关键词：</label><input type="text" id="keyWord" value="@(ViewBag.KeyWord)" name="keyWord" class="form-control" />&nbsp;
+            <label>所属分类:</label>
+            @Html.DropDownList("consultClassifyId", select, "请选择",new { @data_toggle = "selectpicker" })  
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            <a class="btn btn-orange" href="javascript:;" onclick="$(this).navtab('reloadForm', true);" data-icon="undo">清空查询</a> 
+            @if (user.HasButton(SysButton.Delete))
+            {
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn-default dropdown-toggle" data-toggle="dropdown" data-icon="copy">复选框-批量操作<span class="caret"></span></button>
+                        <ul class="dropdown-menu right" role="menu">
+                            <li><a href="@Url.Action("BatchDelete", "Consult")" class="get-verification-token" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？" data-idname="ids" data-group="ids">删除选中</a></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+        <tr>
+            <th width="26"><input type="checkbox" class="checkboxCtrl" data-group="ids" data-toggle="icheck"></th> 
+            <th data-order-field="Consult.UserName">姓名</th> 
+            <th data-order-field="Consult.Email">电子邮件</th>
+            <th data-order-field="Consult.CreateTime">咨询时间</th>
+            <th width="100">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr data-id="@(item.Consult.Id)">
+                <td><input type="checkbox" name="ids" data-toggle="icheck" value="@(item.Consult.Id)"></td> 
+                <td>@item.Consult.UserName</td> 
+                <td>@item.Consult.Email</td>
+                <td>@item.Consult.CreateTime.ToDisplayDateTime()</td>
+                <td>
+                    @if (user.HasButton(SysButton.Browse))
+                    {
+                        <a href="@Url.Action("Detail", new {id = item.Consult.Id})" class="btn btn-green" data-toggle="navtab" data-width="800" data-height="400" data-id="consult-detail" data-reload-warn="本页已有打开的内容，确定将刷新本页内容，是否继续？" data-title="@(item.Consult.Title)-详情">详情</a>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+@Html.AntiForgeryToken()
+@{ Html.RenderPartial("_Footer_Pager",Model);}
+ 

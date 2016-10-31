@@ -1,0 +1,92 @@
+﻿@using Hei10.Core.Extensions
+@using Hei10.Core.Utilities
+@using Hei10.Domain.Enums
+@using Hei10.Web.Framework.Extensions
+@model AdminModel
+<script type="text/javascript">
+    function doc_upload_success(file, data) {
+        var json = $.parseJSON(data);
+        $(this).bjuiajax('ajaxDone', json);
+        if (json[BJUI.keys.statusCode] == BJUI.statusCode.ok) {
+            $('#HeadImg').val(json.filePath);
+            $('#doc_span_pic').html('已上传图片：<img src="' + json.imgPath + '" width="100">');
+        }
+    }
+    function user_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            doSetUserName($('#RealName').val());
+            $(this)
+                .bjuiajax('ajaxDone', json) // 信息提示
+                .dialog('closeCurrent') //关闭当前
+                .dialog('refresh', "");
+
+        }
+
+    }
+</script>
+@using (Html.BeginForm("ModifyInfo", "UCenter", FormMethod.Post, new { @data_toggle = "validate", @data_alertmsg = "false", @data_callback = "user_callback", @data_confirmMsg = "确定提交吗？" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.CommonStatus)
+    @Html.HiddenFor(m => m.LoginName)
+    <div class="bjui-pageContent">
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.RealName)：</label>
+                        @Html.TextBoxFor(m => m.RealName, new { @class = "input-lg w500", @data_rule = "required;length[~50]" })
+                    @Html.ValidationMessageFor(m => m.RealName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Remark)：</label>
+                        @Html.TextAreaFor(m => m.Remark, new { cols = "60", rows = "10", @data_rule = "required;length[~250]" })
+                        @Html.ValidationMessageFor(m => m.Remark)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="h40">
+                        <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Gender)：</label>
+                        <input type="radio" name="Gender" id="Gender-radio1" value="@(Gender.Male)" data-toggle="icheck" @(Model.Gender == Gender.Male ? "checked=checked" : "") data-rule="checked" data-label="@(Gender.Male.GetDescriotion())">
+                        <input type="radio" name="Gender" id="Gender-radio2" value="@(Gender.Female)" data-toggle="icheck" @(Model.Gender == Gender.Female ? "checked=checked" : "") data-label="@(Gender.Female.GetDescriotion())">
+                        @Html.ValidationMessageFor(m => m.Gender)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="h60">
+                        <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.HeadImg)：</label>
+                        <div style="display:inline-block; vertical-align:middle;">
+                            <div id="doc_pic_up" data-toggle="upload" data-uploader="@Url.Action("BatchUpload","Attachment",new { src = TableSource.Users })"
+                                 data-file-size-limit="1024000000"
+                                 data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                 data-multi="false"
+                                 data-on-upload-success="doc_upload_success"
+                                 data-icon="cloud-upload"></div>
+                            @Html.HiddenFor(m => m.HeadImg)
+                            @Html.ValidationMessageFor(m => m.HeadImg)
+                        </div>
+                        <span id="doc_span_pic">
+                            @if (!string.IsNullOrEmpty(Model.HeadImg))
+                            {
+                                <img src="@Url.ThumbUrl(Model.HeadImg, "100x100")" alt="" width="100" style="margin-top: 10px;" />
+                            }
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bjui-pageFooter">
+        <ul>
+            <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+            <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+        </ul>
+    </div>
+}

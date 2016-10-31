@@ -1,0 +1,92 @@
+﻿@using Hei10.Core.Extensions
+@using Hei10.Domain.Enums
+@model PagedList.IPagedList<SysOperationLog>
+@{
+    int pageCurrent = Model.PageNumber;
+    int pageSize = Model.PageSize;
+    string tit = ViewBag.tit;
+    string src = ViewBag.src;
+    string uname = ViewBag.uname;
+    string srcId = ViewBag.srcId;
+    DateTime? minTime = ViewBag.minTime;
+    DateTime? maxTime = ViewBag.maxTime;
+    Layout = null;
+}
+<style type="text/css">
+    #bjui-calendar > .main > .foot > .time .hh, #bjui-calendar > .main > .foot > .time .mm, #bjui-calendar > .main > .foot > .time .ss {
+        width: 21px;
+    }
+</style>
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@Url.Action("Index")" method="post">
+        <input type="hidden" name="pageSize" value="@Model.PageSize">
+        <input type="hidden" name="pageCurrent" value="@pageCurrent">
+        <input type="hidden" name="orderField" value="@Request["orderField"]">
+        <input type="hidden" name="orderDirection" value="@Request["orderDirection"]">
+        <div class="bjui-searchBar">
+            <label>标题：</label><input type="text" value="@tit" name="tit" class="form-control" size="15">&nbsp;
+            <label>表名：</label><input type="text" value="@src" name="src" class="form-control" size="15">&nbsp;
+            <label>操作人：</label><input type="text" value="@uname" name="uname" class="form-control" size="15">&nbsp;
+            <label>主键：</label><input type="text" value="@srcId" name="srcId" class="form-control" size="15">
+            <button type="button" class="showMoreSearch" data-toggle="moresearch" data-name="custom"><i class="fa fa-angle-double-down"></i></button>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
+        </div>
+        <div class="bjui-moreSearch">
+            <label>&nbsp;类型:</label>
+            @Html.DropDownList("type", OperationType.Update.GetSList(), "全部")
+            <label>&nbsp;分类:</label>
+            @Html.DropDownList("cat", TableSource.None.GetSList(), "全部")
+            <label>&nbsp;时间:</label>
+            <input type="text" value="@minTime" name="minTime" size="20" data-toggle="datepicker" data-pattern="yyyy-MM-dd HH:mm:ss"> 至 
+            <input type="text" value="@maxTime" name="maxTime" size="20" data-toggle="datepicker" data-pattern="yyyy-MM-dd HH:mm:ss"> 
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table class="table table-bordered table-hover table-striped table-top">
+        <thead>
+            <tr>
+                <th data-order-field="LogTitle" align="center">标题</th>
+                <th>操作人</th>
+                <th>分类</th>
+                <th>类型</th>
+                <th>表名</th>
+                <th>主键</th>
+                <th data-order-field="CreateTime" align="center">操作时间</th>
+                <th>操作IP</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-id="@item.Id">
+                    <td>@item.LogTitle</td>
+                    <td>@item.CreateUserName</td>
+                    <td>@item.LogCat.GetDescriotion()</td>
+                    <td>@item.LogType.GetDescriotion()</td>
+                    <td>@item.DataSource</td>
+                    <td>@item.DataSouceId</td>
+                    <td>@item.CreateTime.ToDisplayDateTime()</td>
+                    <td>@item.CreateIP</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>每页&nbsp;</span>
+        <div class="selectPagesize">
+            <select data-toggle="selectpicker" data-toggle-change="changepagesize">
+                <option value="30">30</option>
+                <option value="60">60</option>
+                <option value="120">120</option>
+                <option value="150">150</option>
+            </select>
+        </div>
+        <span>&nbsp;条，共 @(Model.TotalItemCount) 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="@(Model.TotalItemCount)" data-page-size="@pageSize" data-page-current="@pageCurrent">
+    </div>
+</div> 

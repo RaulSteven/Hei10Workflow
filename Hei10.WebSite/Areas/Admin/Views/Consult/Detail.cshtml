@@ -1,0 +1,31 @@
+﻿@model Hei10.Domain.Models.Consult
+
+<div class="bjui-pageContent">
+    <table class="table-bordered table-condensed table-hover" width="100%">
+        <tbody>
+            <tr>
+                <td style="height: 60px;">
+                    <label for="" class="control-label x85">姓名：</label>
+                    @Html.Raw(Model.UserName)
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 60px;">
+                    <label for="" class="control-label x85">电子邮件：</label>
+                    @Html.Raw(Model.Email)
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 260px;">
+                    <label for="" class="control-label x85">内容：</label>
+                    @Html.Raw(Model.Contents)
+                </td>
+            </tr>  
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">取消</button></li> 
+    </ul>
+</div>

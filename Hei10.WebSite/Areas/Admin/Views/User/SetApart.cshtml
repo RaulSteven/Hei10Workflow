@@ -1,0 +1,52 @@
+﻿
+@model string
+<script type="text/javascript">
+    var saveUrl = '@Url.Action("SetApart", new { id = ViewBag.UserId })';
+    $.CurrentDialog.find('#setApartBtnSave').click(function () {
+        var zTree = $.fn.zTree.getZTreeObj("apartSelectZtree");
+        var checkNodes = zTree.getCheckedNodes(true);
+        if (!checkNodes || checkNodes.length == 0) {
+            $.CurrentDialog.alertmsg('error', '请至少选择一个部门！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        var apartIdArr = [];
+        var nodesCount = checkNodes.length;
+        for (var i = 0; i < nodesCount; i++) {
+            apartIdArr.push(checkNodes[i].id);
+        }
+        var apartIds = apartIdArr.join(',');
+        delete apartIdArr;
+        apartIdArr = null;
+
+        $.post(saveUrl, { apartIds: apartIds }, function (result) {
+            var msgType = "error";
+            if (result.statusCode == 200) {
+                $(this).dialog('closeCurrent'); // 为指定的tabid设置刷新标记
+                msgType = "ok";
+            }
+            $.CurrentDialog.alertmsg(msgType, result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+        });
+    });
+</script>
+<div class="bjui-pageHeader">
+</div>
+<div class="bjui-pageContent">
+    <div>
+        <!-- 内容区 -->
+        <ul id="apartSelectZtree" class="ztree" data-toggle="ztree"
+            data-check-enable="true"
+            data-options="{expandAll:true,nodes:@Model}"></ul>
+    </div>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn btn-close" data-icon="close">关闭</button>
+        </li>
+        <li>
+            <button type="button" class="btn btn-green" id="setApartBtnSave" data-icon="close">保存</button>
+        </li>
+    </ul>
+</div>
+
+

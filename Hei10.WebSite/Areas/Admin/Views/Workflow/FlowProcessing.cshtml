@@ -1,0 +1,55 @@
+﻿<script src="~/Res/Workflow/gojs/go.js"></script>
+<script src="~/Res/common/flow-display.js"></script>
+<div style="padding:8px 5px 0 10px;">
+    <span style="display:inline-block; height:12px; width:12px; background:#4fba4f; margin-left:6px; vertical-align:middle;"></span>
+    <label style="vertical-align:middle;">已完成步骤</label>
+    <span style="display:inline-block; height:12px; width:12px; background:#ff9001; margin-left:6px; vertical-align:middle;"></span>
+    <label style="vertical-align:middle;">待处理步骤</label>
+    <span style="display:inline-block; height:12px; width:12px; background:#7e7e7f; margin-left:6px; vertical-align:middle;"></span>
+    <label style="vertical-align:middle;">未经过步骤</label>
+</div>
+<div id="flowDiagram" style="padding: 5px; width: 100%; height: 400px; overflow: hidden;"></div>
+@Html.Hidden("currFlowDiagram", (string)ViewBag.CurrFlowData)
+<script type="text/javascript">
+    initDiagram();
+
+    var showFlowData = function() {
+        var flowData = document.getElementById("currFlowDiagram").value;
+        if (!flowData) return;
+
+        // 加载流程图
+        // 【开始】-> 【已完成】（N个） -> 【待处理】 -> 【未处理】 -> 【结束】
+        loadDiagram(flowData);
+
+        var strStepKeys = '@ViewBag.FlowPathKeys';
+        var isCompleted = @ViewBag.IsCompleted;
+        var stepKeys = strStepKeys.split(',');
+        window.stepKeys = stepKeys;
+
+        // 查找所有【已完成】步骤：【开始】-> 【已完成】（N个）
+        var steps = findFinishedSteps(stepKeys, isCompleted);
+        //$.each(steps, function(i, item) {
+        //    alert(item.data.text);
+        //});
+
+        // 高亮所有“已完成”步骤
+        updateFinishedNodes(steps);
+
+        //【开始】-> 【已完成】（N个）->【待处理】
+        // 或
+        //【开始】-> 【已完成】（N个）->【结束】
+        var lastStep = findLastStep(stepKeys, steps, isCompleted);
+        steps.push(lastStep);
+
+        if (!isCompleted) {
+            // “待处理”步骤，加上闪烁动画
+            loopWaitHandleNode(lastStep);
+        }
+
+        // 在连线上加闪烁动画
+        var links = findFinishedLinks(steps);
+        loopLinks(links);
+    };
+
+    showFlowData();
+</script>

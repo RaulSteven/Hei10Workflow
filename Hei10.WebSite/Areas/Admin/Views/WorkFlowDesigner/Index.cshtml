@@ -1,0 +1,143 @@
+﻿<script src="~/Res/Workflow/gojs/go.js"></script>
+<script src="~/Res/common/flow-desinger.js"></script>
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@Url.Action("Index")" method="post">
+        <a href="@Url.Action("FlowList")" class="btn btn-green" data-toggle="dialog" data-width="850" data-height="500" data-icon="folder-open" data-id="formOpenFlow" data-mask="true" data-title="打开">打开</a>
+        <a href="javascript:onCreateFlow();" class="btn btn-blue" data-icon="plus">新建流程</a>
+        <a href="javascript:onSetFlow();" class="btn btn-orange" data-icon="cogs">流程属性</a>
+        <a href="javascript:saveFlowData();" class="btn btn-success" data-icon="save" id="btnSaveFlow">保存</a>
+        <a href="javascript:publishFlow();" class="btn btn-danger" data-icon="server" id="btnPublishFlow">发布</a>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent" style="width: 100%; height: 95%; white-space: nowrap;">
+    <div id="myPaletteDiv" style="display: inline-block; vertical-align: top; padding: 5px; width: 110px; height: 100%; overflow: hidden; border: solid 1px gray;">
+    </div>
+
+    <div id="flowdiv" style="display: inline-block; vertical-align: top; padding: 5px; width: 90%; height: 100%; overflow: hidden; border: solid 1px gray;">
+    </div>
+</div>
+<form id="formSaveFlow" action="@Url.Action("Save")" data-toggle="ajaxform">
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id")
+    @Html.Hidden("name")
+    @Html.Hidden("tableSource")
+    @Html.Hidden("processContent")
+    @Html.Hidden("remark")
+</form>
+
+<form id="formPublishFlow" action="@Url.Action("Publish")" data-toggle="ajaxform">
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id")
+    @Html.Hidden("name")
+</form>
+<script type="text/javascript">
+
+    var gUrlEditStep = "@Url.Action("EditStep")";
+    var gUrlEditLink = "@Url.Action("EditLink")";
+    var gUrlEditFlow = "@Url.Action("SetFlow")";
+    var gUrlGetFlowData = "@Url.Action("GetFlowData")";
+
+    initFlowDiagram();
+
+    var fId = @(ViewBag.FlowId);
+    if (fId) {
+        openFlow(fId);
+    } else {
+        onCreateFlow();
+    }
+
+    // 保存流程图的json数据
+    var saveFlowData = function() {
+
+        // 检查流程图是否符合规范
+        var errMsg = checkFlowDiagram(myDiagram.model);
+        if (errMsg !== "") {
+            $(this).alertmsg('warn', errMsg);
+            return;
+        }
+
+        saveDiagramProperties();
+        myDiagram.isModified = false;
+
+        setProcessContent(myDiagram.model.toJson());
+        $(this).alertmsg('confirm', '确定保存流程吗？',
+        {
+            displayMode: 'slide',
+            displayPosition: 'topcenter',
+            okCall: function() {
+                $.post('@Url.Action("CheckIsRun")',
+                    {
+                        processId: fId
+                    },
+                    function(data) {
+                        alert(data);
+                        if (data == true) {
+                            $(this).alertmsg('confirm', '确定要自动回退所有流程吗？（如选择否则需要手动去撤销流程）',
+                            {
+                                displayMode: 'slide',
+                                displayPosition: 'topcenter',
+                                okCall: function() {
+                                    $.post('@Url.Action("RunReturn")', { processId: fId }, function(d) {
+                                        if (d.statusCode != 200) {
+                                            $(this).alertmsg('error', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                                            return;
+                                        }
+                                    });
+                                    $('#formSaveFlow').bjuiajax('ajaxForm', {
+                                        callback: function(result) {
+                                            $(this).alertmsg('info', result.message);
+
+                                            if (result.Data) {
+                                                setFlowId(result.Data);
+                                            }
+                                        }
+                                    });
+                                    return;
+                                }
+                            });
+                        } else {
+                            $('#formSaveFlow').bjuiajax('ajaxForm', {
+                                callback: function(result) {
+                                    $(this).alertmsg('info', result.message);
+
+                                    if (result.Data) {
+                                        setFlowId(result.Data);
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+                )}
+        });
+    };
+
+    // 发布流程
+    var publishFlow = function() {
+
+        // 检查流程图是否符合规范
+        var errMsg = checkFlowDiagram(myDiagram.model);
+        if (errMsg !== "") {
+            $(this).alertmsg('warn', errMsg);
+            return;
+        }
+
+        var flowId = getFlowId();
+        if (!flowId || flowId <= 0) {
+            $(this).alertmsg('warn', "请先保存流程图~");
+            return;
+        }
+
+        setProcessContent(myDiagram.model.toJson());
+
+        $("#formPublishFlow #id").val(flowId);
+        $("#formPublishFlow #name").val(getFlowName());
+
+        $('#formPublishFlow').bjuiajax('ajaxForm', {
+            confirmMsg: "确定发布流程吗？",
+            callback: function(result) {
+                $(this).alertmsg('info', result.message);
+            }
+        });
+    };
+</script>

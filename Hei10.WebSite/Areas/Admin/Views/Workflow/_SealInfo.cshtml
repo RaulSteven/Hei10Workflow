@@ -1,0 +1,32 @@
+﻿@model SealInfo
+<table class="table-bordered table-condensed table-hover" width="100%">
+    <tbody>
+        <tr>
+            <td align="center"><h3>盖章申请</h3></td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">盖章的名称：</label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "input-lg w500", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">申请时间：</label>
+                @Html.TextBoxFor(m => m.ApplyTime,string.Format("{0:yyyy-MM-dd}",Model.ApplyTime), new { @class = "input-lg", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">申请人：</label>
+                @Html.TextBoxFor(m => m.ApplyUserName, new { @class = "input-lg w500", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">盖章文件说明：</label>
+                @Html.TextAreaFor(m => m.FileExplain, 10, 80, new {@readonly = "readonly" })
+            </td>
+        </tr>
+    </tbody>
+</table>

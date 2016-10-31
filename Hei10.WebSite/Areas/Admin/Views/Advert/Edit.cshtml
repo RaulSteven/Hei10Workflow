@@ -1,0 +1,105 @@
+﻿@using Hei10.Core.Extensions
+@using Hei10.Core.Utilities
+@using Hei10.Domain.Enums
+@using Hei10.Web.Framework.Extensions
+@model AdPosition
+<script type="text/javascript">
+    function doc_upload_success(file, data) {
+        var json = $.parseJSON(data);
+        $(this).bjuiajax('ajaxDone', json);
+        if (json[BJUI.keys.statusCode] == BJUI.statusCode.ok) {
+            $('#ImgUrl').val(json.filePath);
+            $('#doc_span_pic').html('已上传图片：<img src="' + json.imgPath + '" width="100">');
+        }
+    }
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+                .bjuiajax('ajaxDone', json) // 信息提示
+                 .navtab('refresh', '') // 为指定的tabid设置刷新标记
+                .dialog('closeCurrent');
+        }
+
+    }
+</script>
+@using (Html.BeginForm("Edit", "Advert", FormMethod.Post, new { @data_toggle = "validate", @data_alertmsg = "false", @data_callback = "button_callback" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Partial("_Edit_Hidden_Base")
+    <div class="bjui-pageContent">
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Name, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "input-lg w500", @data_rule = "required;length[~50]" })
+                        @Html.ValidationMessageFor(m => m.Name)
+                        必填，最多50个字符。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Code, new { @class = "control-label x85" })
+                        @Html.DropDownListFor(m => m.Code, AdPosKey.HomeSlide.GetSList(), new { @data_toggle = "selectpicker" })
+                        @Html.ValidationMessageFor(m => m.Code)
+                        可以添加多次，有的位置会取最新的，如首页轮播；有的位置会取列表，如首页板块1（2345）。
+                    </td>
+                </tr>
+                <tr>
+                    <td class="h60">
+                        @Html.LabelFor(m => m.ImgUrl, new { @class = "control-label x85" })
+                        <div style="display: inline-block; vertical-align: middle;">
+                            <div id="doc_pic_up" data-toggle="upload" data-uploader="@Url.Action("BatchUpload", "Attachment", new {src = TableSource.AdPositions})"
+                                 data-file-size-limit="1024000000"
+                                 data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                 data-multi="false"
+                                 data-on-upload-success="doc_upload_success"
+                                 data-icon="cloud-upload"></div>
+                            @Html.HiddenFor(m => m.ImgUrl)
+                            @Html.ValidationMessageFor(m => m.ImgUrl)
+                        </div>
+                        <span id="doc_span_pic">
+                            @if (!string.IsNullOrEmpty(Model.ImgUrl))
+                            {
+                                <img src="@Url.ThumbUrl(Model.ImgUrl, "100x100")" alt="" width="100" style="margin-top: 10px;" />
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Size, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.Size, new { @size = "20", @data_rule = "length[~50]" })
+                        @Html.ValidationMessageFor(m => m.Size)
+                        最多50个字符，如：100x100。
+                    </td>
+                </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Sort, new {@class = "control-label x85"})
+                    @Html.TextBoxFor(m => m.Sort, new {@size = "20", @data_rule = "required;digits;"})
+                    @Html.ValidationMessageFor(m => m.Sort)
+                    必填，数字越小越靠前。
+                </td>
+            </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Descript, new { @class = "control-label x85" })
+                        @Html.TextAreaFor(m => m.Descript, 8, 60, null)
+                        @Html.ValidationMessageFor(m => m.Descript)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bjui-pageFooter">
+        <ul>
+            <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+            <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+        </ul>
+    </div>
+}

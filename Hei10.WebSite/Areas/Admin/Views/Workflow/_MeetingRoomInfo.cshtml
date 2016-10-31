@@ -1,0 +1,38 @@
+﻿@model MeetingRoomInfo
+<table class="table-bordered table-condensed table-hover" width="100%">
+    <tbody>
+        <tr>
+            <td align="center"><h3>会议室使用申请</h3></td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtApplyName" class="control-label x90">申请人：</label>
+                @Html.TextBoxFor(m => m.ApplyName, new { @size = "20", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtName" class="control-label x90">会议室名称：</label>
+                @Html.TextBoxFor(m => m.Name, new {  @size = "20", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtUsedTime" class="control-label x90">使用时间：</label>
+                @Html.TextBoxFor(m => m.UsedTime, new { @size = "30", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtApplyTime" class="control-label x90">申请时间：</label>
+                @Html.TextBoxFor(m => m.ApplyTime, new { @size = "30", @readonly = "readonly" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtRemark" class="control-label x85">使用说明：</label>
+                @Html.TextAreaFor(m => m.Remark, 5, 30, new { @class = "info form-control", @readonly = "readonly" })
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -3,3 +3,15 @@
 ################################################################################
 
 /.vs
+/Hei10.Core/bin/Debug
+/Hei10.Core/obj/Debug
+/Hei10.Domain/bin/Debug
+/Hei10.Domain/obj/Debug
+/Hei10.Domain.Repositories/bin/Debug
+/Hei10.Domain.Repositories/obj/Debug
+/Hei10.Domain.Services/bin/Debug
+/Hei10.Domain.Services/obj/Debug
+/Hei10.Web.Framework/bin/Debug
+/Hei10.Web.Framework/obj/Debug
+/Hei10.WebSite/bin
+/Hei10.WebSite/obj/Debug

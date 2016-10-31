@@ -1,0 +1,96 @@
+﻿@model IPagedList<Users>
+@{
+    SysUser user = ViewBag.CurrUser;
+}
+<script type="text/javascript">
+    $('.get-verification-token').attr({ "data-data": "__RequestVerificationToken=" + $('input[name="__RequestVerificationToken"]').val() });
+     
+</script>
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@Url.Action("Index")" method="GET">
+        <input type="hidden" name="pageSize" value="@Model.PageSize">
+        <input type="hidden" name="pageCurrent" value="@Model.PageNumber">
+        <input type="hidden" name="tabId" value="@Request["tabId"]" />
+        <input type="hidden" name="orderField" value="@(Request["orderField"]??"CreateTime")">
+        <input type="hidden" name="orderDirection" value="@(Request["orderDirection"]??"desc")">
+        <div class="bjui-searchBar">
+            <label>搜索关键词：</label><input type="text" id="keyWord" value="@(ViewBag.KeyWord)" name="keyWord" class="form-control"/>&nbsp; 
+            <label>性别:</label> 
+            @Html.DropDownList("gender", Gender.Female.GetSList(Gender.Female, Gender.Male), "全部", new { @data_toggle = "selectpicker" })&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            <a class="btn btn-orange" href="javascript:;" onclick="$(this).navtab('reloadForm', true);" data-icon="undo">清空查询</a>
+            @if (user.HasButton(SysButton.Add))
+            {
+                <a href="@Url.Action("Edit",new { tabId = Request["tabId"]})" class="btn btn-green" data-toggle="navtab" data-id="user-edit" data-reload-warn="本页已有打开的内容，确定将刷新本页内容，是否继续？" data-title="添加管理员信息">添加</a>
+            }
+            @if (user.HasButton(SysButton.Grant))
+            {
+                <a href="@(Url.Action("SetRole") + "?userId={#bjui-selected}")" class="btn btn-blue" data-toggle="dialog" data-width="800" data-height="400" data-icon="edit" data-id="form" data-title="设置角色">设置角色</a>
+                <a href="@(Url.Action("SetApart") + "?id={#bjui-selected}")" class="btn btn-blue" data-toggle="dialog" data-width="400" data-height="800" data-icon="edit" data-id="form" data-title="设置部门">设置部门</a>
+            }
+            @if (user.HasButton(SysButton.Delete| SysButton.Edit))
+            {
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn-default dropdown-toggle" data-toggle="dropdown" data-icon="copy">复选框-批量操作<span class="caret"></span></button>
+                        <ul class="dropdown-menu right" role="menu">
+                            @if (user.HasButton(SysButton.Edit))
+                            {
+                                <li><a href="@Url.Action("BatchPassReset")" class="get-verification-token"  data-toggle="doajaxchecked" data-confirm-msg="确定要进行密码重置？" data-idname="ids" data-group="ids">密码重置</a></li>
+                            }
+                            @if (user.HasButton(SysButton.Delete))
+                            {
+                                <li class="divider"></li>
+                                <li><a href="@Url.Action("BatchDelete", "User")" class="get-verification-token" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？" data-idname="ids" data-group="ids">删除选中</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+        <tr>
+            <th width="26"><input type="checkbox" class="checkboxCtrl" data-group="ids" data-toggle="icheck"></th>
+            <th data-order-field="LoginName">用户名</th>
+            <th data-order-field="RealName">真实姓名</th>
+            <th data-order-field="CommonStatus">状态</th>
+            <th>Ip</th>
+            <th data-order-field="Gender">性别</th>
+            <th data-order-field="CreateTime">加入时间</th>
+            <th data-order-field="LoginCount">登录次数</th>
+            <th width="100">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-id="@(item.Id)">
+                    <td><input type="checkbox" name="ids" data-toggle="icheck" value="@(item.Id)"></td>
+                    <td>@item.LoginName</td>
+                    <td>@item.RealName</td>
+                    <td>@item.CommonStatus.GetDescriotion()</td>
+                    <td>@item.CreateIP</td>
+                    <td>@item.Gender.GetDescriotion()</td>
+                    <td>@item.CreateTime.ToDisplayDateTime()</td>
+                    <td>@item.LoginCount</td> 
+                    <td>
+                        @if (user.HasButton(SysButton.Edit))
+                        {
+                            <a href="@Url.Action("Edit", new {userId = item.Id,tabId = Request["tabId"]})" class="btn btn-green" data-toggle="navtab" data-id="user-edit" data-reload-warn="本页已有打开的内容，确定将刷新本页内容，是否继续？" data-title="编辑-@(item.RealName)">编辑</a>
+                        }
+                        @if (user.HasButton(SysButton.Delete))
+                        {
+                            <a href="@Url.Action("BatchDelete", "User", new {ids = item.Id})" class="btn btn-red get-verification-token" data-toggle="doajax" data-confirm-msg="确定要删除该行信息吗？">删除</a>
+                        }
+                    </td>
+                </tr>
+            } 
+        </tbody>
+    </table>
+</div> 
+@Html.AntiForgeryToken()
+@{ Html.RenderPartial("_Footer_Pager", Model);}

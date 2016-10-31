@@ -1,0 +1,59 @@
+﻿@model UploadModel
+<script>
+
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('refresh');
+        }
+    };
+</script>
+<div class="bjui-pageContent">
+    <form action="@Url.Action("UploadSetting")" id="UploadSetting" data-callback="button_callback" data-toggle="validate" data-alertmsg="false">
+        @Html.AntiForgeryToken()
+        <table class="table table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.UploadPath, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.UploadPath, new Dictionary<string, object> { { "size", 40 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.UploadPath)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.UploadFileTypes, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.UploadFileTypes, new Dictionary<string, object> { { "size", 40 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.UploadFileTypes)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.ImgSites, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.ImgSites, new Dictionary<string, object> { { "size", 40 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.ImgSites)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.UploadFileSizes, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.UploadFileSizes, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required:digits" } })
+                        @Html.ValidationMessageFor(m => m.UploadFileSizes)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.WaterMarkingPath, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.WaterMarkingPath, new Dictionary<string, object> { { "size", 40 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.WaterMarkingPath)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+        <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+    </ul>
+</div>

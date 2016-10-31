@@ -1,0 +1,66 @@
+﻿@{
+    bool showAdvert = ViewBag.ShowAdvert??false;
+    var showCur = ViewBag.Cur;
+    var configRep = DependencyResolver.Current.GetService<ISysConfigRepository>();
+}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="Keywords" content="建荣科技">
+    <meta name="description" content="建荣科技">
+    <title>@configRep.WebSiteName - @ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" href="/Res/home/style/global.css">
+    <link rel="stylesheet" type="text/css" href="/Res/home/style/style.css">
+    <link rel="stylesheet" type="text/css" href="/Res/home/style/swiper.css"> 
+</head>
+<body>
+    <!--导航s-->
+    @if (showAdvert)
+    { 
+        Html.ShowAdvert(AdPosKey.HomeSlide, AdvertType.Img);
+    }
+    <!--导航end-->
+    <!-- header -->
+    <div class="header @(string.IsNullOrEmpty(showCur)? "":"cur")">
+        <div class="logo"><a href="/"><img src="/Res/home/images/logo.png" alt=""></a></div>
+        <div class="nav-top">
+            <ul id="nav" class="nav-ul-li">
+                <div class="close"><a href="/"><img src="/Res/home/images/icon-close.png" alt=""></a></div>
+                <li class="current"><a href="/#page1"><span>首页</span></a></li>
+                <li><a href="/#page2"><span>关于建荣</span></a></li>
+                <li><a href="/#page3"><span>建荣案例</span></a></li>
+                <li><a href="/#page4"><span>加入建荣</span></a></li>
+                <li><a href="/#page5"><span>员工天地</span></a></li>
+                <li><a href="/#page6"><span>联系我们</span></a></li>
+                <li><a href="http://www.gxjrgroup.com/" target="_blank"><span>建荣集团</span></a></li>
+            </ul>
+        </div>
+        <div class="menu"><a href="javascript:;"></a></div>
+    </div>
+    <!-- header end -->
+    <!--内容处s-->
+    <div class="wrap-main">
+        @RenderBody()
+    </div>
+    <!--内容处 end-->
+    <div class="footer-copy clearfix">
+        <div class="footer clearfix">
+            <div class="left">
+                <p>@configRep.WebSiteCopyRight  @configRep.WebSiteICP</p>
+                <p>@configRep.CompanyAddr   <span>/</span>   @configRep.CompanyTel</p>
+            </div>
+            @{Html.RenderAction("PartnerList","Home");}
+        </div>
+    </div>
+    <script src="/Res/home/js/jquery-1.7.1.min.js"></script>
+    <script src="/Res/home/js/swiper3/swiper.min.js"></script>
+   
+    @MiniProfiler.RenderIncludes()
+    @RenderSection("footJs",false)
+</body>
+</html>

@@ -1,0 +1,19 @@
+﻿@model Hei10.Domain.Infrastructure.AggregateRoot
+    @{
+        bool showStatus = true;
+        if (ViewData["StatusShow"] != null)
+        {
+            showStatus = (bool)ViewData["StatusShow"];
+        }
+    }
+
+
+@Html.HiddenFor(m => m.Id)
+@if (showStatus)
+{
+    @Html.HiddenFor(m => m.CommonStatus)
+}
+@Html.HiddenFor(m => m.CreateUserId)
+@Html.HiddenFor(m => m.CreateUserName)
+@Html.HiddenFor(m => m.CreateTime)
+@Html.HiddenFor(m => m.CreateIP)

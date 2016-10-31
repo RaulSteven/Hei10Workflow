@@ -1,0 +1,37 @@
+﻿@model TongJiSettingsModel
+<script>
+
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('refresh');
+        }
+    };
+</script>
+<div class="bjui-pageContent">
+    <form action="@Url.Action("TongJiSettings")" id="TongJiSettings" data-callback="button_callback" data-toggle="validate" data-alertmsg="false">
+        @Html.AntiForgeryToken()
+        <table class="table table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.StatisticsJS, new { @class = "control-label x85" })
+                        @Html.TextAreaFor(m => m.StatisticsJS,20,100, new Dictionary<string, object> { { "data-rule", "required;length[~3000]" } })
+                    @Html.ValidationMessageFor(m => m.StatisticsJS)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+        <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+    </ul>
+</div>

@@ -1,0 +1,157 @@
+﻿@{ 
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "首页";
+    ViewBag.ShowAdvert = true;
+    string staff = ViewBag.Staff;
+    List<ArticleBizModel> caseList = ViewBag.Case;
+    List<RecruitJob> job = ViewBag.Job;
+}
+@section footJs{ 
+    <script src="~/Res/home/js/jquery.validate.min.js"></script>
+    <script src="~/Res/home/js/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Res/home/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="/Res/home/js/jianrong.js"></script>
+    <script src="/Res/home/js/masonry-docs.min.js"></script>
+    <script src="/Res/home/js/jquery.xgallerify.js"></script>
+    <script src="/Res/home/js/jquery.nav.js"></script>
+    <script type="text/javascript">
+            $(document).ready(function (e) {
+                var mySwiper = new Swiper('.swiper-banner', {
+                    pagination: '.pagination-a',
+                    loop: true,
+                    grabCursor: true,
+                    paginationClickable: true,
+                });
+
+                var swiper = new Swiper('.sliding-zc', {
+                    pagination: '.swiper-pagination',
+                    slidesPerView: 4,
+                    slidesPerColumn: 2,
+                    paginationClickable: true,
+                    spaceBetween: 10,
+                });
+                var win = function () {
+                    var w = $(window).width();
+                    if (w > 1200) {
+                        swiper.params.slidesPerView = 4;
+                        swiper.update();
+                    };
+                    if (w <= 1200) {
+                        swiper.params.slidesPerView = 3;
+                        swiper.update();
+                    };
+                    if (w <= 640) {
+                        swiper.params.slidesPerView = 1;
+                        swiper.update();
+                    };
+                }
+                win();
+                $(window).resize(function () {
+                    win();
+                });
+
+            });
+
+            /*员工天地*/
+            var gallery = $('.photos').gallerify({
+                margin: 0,
+                mode: 'default',
+                lastRow: 'adjust'
+            });
+
+            /*导航*/
+            $(document).ready(function () {
+                $('#nav').onePageNav();
+            });
+    </script>
+}
+<!--关于建荣s-->
+<div id="page2" class="box-about">
+    <div class="title"><h1 class="bg-top">关于建荣</h1><p>about us</p></div>
+    <div class="text">广西建荣科技有限公司成立于2006年6月，主要从事工程立项、可行性研究、造价咨询、设计、施工阶段监理以及其他与建设工程相关的项目管理技术服务性工作的综合型企业。我公司现取得房屋建筑工程监理甲级、市政公用工程监理甲级资质及工程造价咨询甲级资质，是广西建设监理协会、南宁市建设监理协会、南宁市建设工程质量安全协会的会员单位。</div>
+    <div class="pic"><img src="/Res/home/images/pic-about.jpg" alt=""></div>
+    <ul class="list clearfix">
+        <li><span>10</span>年经验</li>
+        <li><span>50</span>个队友</li>
+        <li class="last"><span>200</span>个成功案例</li>
+    </ul>
+
+</div>
+<!--关于建荣 end-->
+<!--案例s-->
+<div id="page3" class="box-case">
+    <div class="title"><h1 class="bg-bottom">案例</h1><p>case</p></div>
+    <!-- sliding -->
+    <div class="sliding-zc">
+        <div class="swiper-wrapper">
+            @foreach (var item in caseList)
+            {
+                var pic = (item.Article.Pic ?? "").Split(',').FirstOrDefault(d => !string.IsNullOrEmpty(d))??"";
+                <div class="swiper-slide">
+                    <div class="case-list">
+                        <div class="meg">
+                            <a href="@Url.Action("CaseDetail",new { id = item.Article.Id })" title="@item.Article.Title">
+                                <div class="pic"><img class="" src="@Url.ThumbUrl(pic, "455x303")" alt="@item.Article.Title" title="@item.Article.Title"></div>
+                                <div class="text"><span>@item.ArticleClassifyName</span><h1 class="name">@item.Article.Title</h1><span>@item.Article.ArticleDateTime.Year</span></div>
+                                <div class="pic-bg"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            } 
+        </div>
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination cass-page"></div>
+    <!-- sliding end -->
+
+</div>
+<!--案例 end-->
+<!--加入建荣s-->
+<div id="page4" class="box-jion">
+    <div class="title"><h1 class="bg-right">加入建荣</h1><p>join us</p></div>
+    <ul class="post clearfix">
+        @foreach (var item in job)
+        {
+            <li><a href="javascript:;" title="@item.Name">@item.Name</a></li>
+        } 
+    </ul>
+    <div class="text">
+        我们期待你的加入,由12人发展到50人的团队,我们共同创造,共同成长,用真实的技术力量产生影响.
+        请发送简历及作品集至 HR@jianrongkj.com，邮件主题为：“职位+姓名”。
+    </div>
+    <div class="pic"><img src="/Res/home/images/pic-team.jpg" alt=""></div>
+    <ul class="list clearfix">
+        <li><span>10</span>个团队成员</li>
+        <li><span>50</span>次出行旅游</li>
+        <li class="last"><span>200</span>元交通补助</li>
+    </ul>
+</div>
+<!--加入建荣 end-->
+<!--员工天地s-->
+<div id="page5" class="box-staff">
+    <div class="title"><h1 class="bg-bottom">员工天地</h1><p>staff world</p></div>
+    <div class="text">我们是一群朝气蓬勃的孩子，一如我们的团队精神“青春需要有放手一搏的决心和勇气，我们要缔造年轻的神话！”我们自信自主不自负，开朗坚持不退缩，果断刚强不犹豫。我们坚信着激情绝不会被磨灭，梦想绝不会被击碎，因为“特别能吃苦，特别能战斗”就是我们一直坚持的信念。我们要通过这种竞技性的比赛，看到自己的不足，寻找差距、缩短差距，从而提高自己，让自己更加强大。</div>
+    <div class="container">
+        <div class="photos">
+            @if (!string.IsNullOrEmpty(staff))
+            {
+                var picList = staff.Split('|').Where(d => !string.IsNullOrEmpty(d)).ToList();
+                foreach (var picUrl in picList)
+                { 
+                    <div class="photo">
+                        <img src="@Url.FileUrl(picUrl)" alt="">
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="look-more" title="查看更多" data-hide="点击隐藏" data-show="查看更多"><a href="javascript:;">查看更多</a></div>
+</div>
+<!--员工 end-->
+<!--联系我们s-->
+<div id="page6" class="box-contact">
+    @{Html.RenderAction("Consult");}
+</div>
+<!--联系我们 end--> 
+

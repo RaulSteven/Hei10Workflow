@@ -1,0 +1,20 @@
+﻿@model RecruitJob
+@{
+    ViewBag.Title = Model.Name;
+    Layout = "~/Views/Shared/_Layout_Menu.cshtml";
+    
+}
+
+<div class="title-jion">
+    <div class="title-1">工作职责：</div>
+    <div class="texts">
+            @Html.Raw(!string.IsNullOrEmpty(Model.WorkDuty)? Model.WorkDuty.Replace("\r\n", "<br>"):"")
+    </div>
+    <div class="title-1">招聘要求：</div>
+    <div class="texts">
+        @Html.Raw(!string.IsNullOrEmpty(Model.Requirement) ? Model.Requirement.Replace("\r\n", "<br>") : "")
+    </div>
+
+    <div class="tip">请发简历至<span>hr@gxjianrong.com</span>,邮件主题为:"职位+姓名"</div>
+</div>
+

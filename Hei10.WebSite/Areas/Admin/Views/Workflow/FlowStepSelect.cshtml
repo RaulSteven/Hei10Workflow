@@ -1,0 +1,39 @@
+﻿@model List<WfActivitySelectModel>
+
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true" id="selectButtons">
+        <thead>
+            <tr>
+                <th>步骤</th>
+                <th>人员</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Activity.text</td>
+                    <td>
+                        @foreach (var user in item.UserList)
+                        {
+                            <label>
+                                <input type="radio" name="actUser" value="{NextStepId:'@item.Activity.key', AssignToUserIds:'[@user.Id]',AssignToUserNames:'@user.RealName'}" data-toggle="icheck" />
+                                @user.RealName
+                            </label>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn-close">关闭</button>
+        </li>
+        <li>
+            <button type="button" class="btn-blue" data-toggle="lookupback" data-lookupid="actUser" data-warn="请至少选择一个按钮" data-icon="check-square-o">确定</button>
+        </li>
+    </ul>
+</div>

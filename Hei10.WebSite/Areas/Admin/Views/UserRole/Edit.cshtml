@@ -1,0 +1,55 @@
+﻿@model UserRoleModel
+<script>
+
+    var tabId = '@Request["tabId"]';
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('switchTab', tabId)// 刷新列表页
+            .navtab('refresh', tabId)// 刷新列表页
+            .dialog('closeCurrent');
+        }
+    };
+</script>
+<div class="bjui-pageContent">
+    <form action="@Url.Action("Edit")" class="pageForm" data-callback="button_callback" data-toggle="validate" data-alertmsg="false" >
+        @Html.AntiForgeryToken()
+        <table class="table table-condensed table-hover">
+            <tbody>
+                <tr>
+                    <td colspan="2" align="center"><h3>编辑角色信息</h3></td>
+                    @Html.HiddenFor(m => m.Id)
+                </tr>
+                <tr>
+                    <td>
+                        <label for="txtName" class="control-label x90">名称：</label>
+                        <input type="text" name="Name" id="txtName" value="@Model.Name" data-rule="required;length(2~10)" size="20">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="txtSort" class="control-label x85">排序：</label>
+                        <input type="text" name="Sort" id="txtSort" value="@Model.Sort" data-rule="required;integer;range[1~]" size="20">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="txtRemark" class="control-label x85">备注信息：</label>
+                        <textarea cols="30" id="txtRemark" name="Remark" class="form-control" data-rule="length[~250]" style="width: 500px; margin: 0px; height: 46px;">@Model.Remark</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close">关闭</button></li>
+        <li><button type="submit" class="btn-default">保存</button></li>
+    </ul>
+</div>

@@ -1,0 +1,53 @@
+﻿@model List<UserRole>
+<script type="text/javascript">
+
+    var roleIds = window.gNodeData.roleIds;
+    if (roleIds) {
+        var chkRows = $("input[name='btnIds']");
+        $.each(roleIds.split(','), function (i, item) {
+            $("input:checkbox[value='" + item + "']").attr("checked", "true");
+        });
+    }
+
+    var doCloseDlg = function() {
+        var chkRows = $("input[name='btnIds']:checked");
+        var chkIds = "";
+        var chkNames = "";
+        $.each(chkRows, function(i, item) {
+            chkIds += $(item).val() + ",";
+            var name = $(item).parent().parent().next().text();
+            chkNames += name + ",";
+        });
+
+        window.gNodeData.roleIds = chkIds.substring(0, chkIds.length - 1);
+        window.gNodeData.roleNames = chkNames.substring(0, chkNames.length - 1);
+    };
+</script>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true" id="selectButtons">
+        <thead>
+            <tr>
+                <th width="30"><input type="checkbox" class="checkboxCtrl" data-group="btnIds" data-toggle="icheck"></th>
+                <th>名称</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model)
+            {
+                <tr data-id="@role.Id">
+                    <td><input type="checkbox" name="btnIds" value="@role.Id" data-toggle="icheck"/></td>
+                    <td>@role.Name</td>
+                    <td>@role.Remark</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" onclick="doCloseDlg()" class="btn-close">确定</button>
+        </li>
+    </ul>
+</div>

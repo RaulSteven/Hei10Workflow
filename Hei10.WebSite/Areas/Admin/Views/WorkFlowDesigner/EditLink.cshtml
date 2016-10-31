@@ -1,0 +1,64 @@
+﻿@model String
+@{
+
+}
+<script type="text/javascript">
+    $(function() {
+        if (window.gNodeData) {
+            var nodeData = window.gNodeData;
+            $('#base_ID').val(nodeData.key);
+            $('#base_Name').val(nodeData.text);
+            $('#base_Remark').val(nodeData.remark);
+            $('#base_Condition').val(nodeData.condition);
+        }
+    });
+
+    var saveData = function () {
+        var nodeData = window.gNodeData;
+        nodeData.key = $('#base_ID').val();
+        nodeData.text = $('#base_Name').val();
+        nodeData.remark = $('#base_Remark').val();
+        nodeData.condition = $('#base_Condition').val();
+        window.gNodeData = nodeData;
+
+        $(this).dialog('closeCurrent');
+    };
+</script>
+<div class="bjui-pageContent">
+    <form  data-toggle="validate">
+        <div style="margin:15px auto 0; width:100%;height: 99%;">
+            <fieldset>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="home">
+                        <table class="table-bordered table-condensed table-hover" style="width: 100%;">
+                            <tr>
+                                <th style="width:20%;" align="right">条件ID：</th>
+                                <td><input type="text" id="base_ID" name="base_ID" readonly="readonly" value="" class="input-nm" style="width:75%" /></td>
+                            </tr>
+                            <tr>
+                                <th align="right">条件名称：</th>
+                                <td><input type="text" id="base_Name" name="base_Name" value="" class="input-nm" style="width:75%" data-rule="required;" /></td>
+                            </tr>
+                            <tr>
+                                <th align="right">条件：</th>
+                                <td><input type="text" id="base_Condition" name="base_Condition" value="" class="input-nm" style="width:75%" data-rule="required;" /></td>
+                            </tr>
+                            <tr>
+                                <th align="right">备注：</th>
+                                <td><textarea rows="4" cols="40" id="base_Remark" name="base_Note" value=""></textarea></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-save" data-icon="save" onclick="saveData()">保存</button></li>
+        <li><button type="button" class="btn-close" data-icon="close">关闭</button></li>
+    </ul>
+</div>
+

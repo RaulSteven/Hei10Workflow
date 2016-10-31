@@ -1,0 +1,39 @@
+﻿@model List<WfActivityInstance>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>步骤名称</th>
+                <th>发送人</th>
+                <th>发送时间</th>
+                <th>指派人</th>
+                <th>处理人</th>
+                <th>完成时间</th>
+                <th>状态</th>
+                <th>意见</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var activity in Model)
+            {
+                <tr data-id="@activity.Id">
+                    <td>@activity.ActivityName</td>
+                    <td>@activity.CreateUserName</td>
+                    <td>@activity.CreateTime.ToDisplayDateTime()</td>
+                    <td>@activity.AssignToUserNames</td>
+                    <td>@activity.DealUserName</td>
+                    <td>@activity.DealTime.ToDisplayDateTime()</td>
+                    <td>@activity.ActivityState.GetDescriotion()</td>
+                    <td>@activity.Comment</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn-close">关闭</button>
+        </li>
+    </ul>
+</div>

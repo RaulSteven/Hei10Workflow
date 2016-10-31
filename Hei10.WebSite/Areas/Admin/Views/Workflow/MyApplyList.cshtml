@@ -1,0 +1,6 @@
+﻿@model PagedList<WfProcessInstance>
+@{
+    ViewData["url"] = Url.Action("MyApplyList");
+}
+@Html.Partial("_ApplyList", Model, this.ViewData)
+

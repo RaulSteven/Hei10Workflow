@@ -1,0 +1,32 @@
+﻿@model SealInfoModel
+<table class="table-bordered table-condensed table-hover" width="100%">
+    <tbody>
+        <tr>
+            <td align="center"><h3>盖章申请</h3></td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.Name)：</label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "inputValidate input-lg w500", @data_rule = "required;length[~250];" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.ApplyTime)：</label>
+                @Html.TextBoxFor(m => m.ApplyTime, string.Format("{0:yyyy-MM-dd}", Model.ApplyTime), new { @class = "inputValidate input-lg", @data_toggle = "datepicker", @data_pattern = "yyyy-MM-dd", @data_rule = "required;date;" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.ApplyUserName)：</label>
+                @Html.TextBoxFor(m => m.ApplyUserName, new { @class = "inputValidate input-lg w500", @data_rule = "required;length[~250];" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.FileExplain)：</label>
+                @Html.TextAreaFor(m => m.FileExplain, 10, 80, new { @data_rule = "required;length[~1000]",@class= "inputValidate" })
+            </td>
+        </tr>
+    </tbody>
+</table>

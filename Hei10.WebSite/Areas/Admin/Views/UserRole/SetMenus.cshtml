@@ -1,0 +1,51 @@
+﻿@model string
+<script type="text/javascript">
+    var saveUrl = '@Url.Action("SetMenus", new { id = ViewBag.RoleId })';
+    $.CurrentDialog.find('#btnSave').click(function () {
+        var zTree = $.fn.zTree.getZTreeObj("roleSetMenuZtree");
+        var checkNodes = zTree.getCheckedNodes(true);
+        if (!checkNodes || checkNodes.length == 0) {
+            $.CurrentDialog.alertmsg('error', '请至少选择一个菜单！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        var menuIdArr = [];
+        var nodesCount = checkNodes.length;
+        for (var i = 0; i < nodesCount; i++) {
+            menuIdArr.push(checkNodes[i].id);
+        }
+        var menuIds = menuIdArr.join(',');
+        delete menuIdArr;
+        menuIdArr = null;
+
+        $.post(saveUrl, { menuIds: menuIds }, function (result) {
+            var msgType = "error";
+            if (result.statusCode == 200) {
+                $(this).dialog('closeCurrent'); // 为指定的tabid设置刷新标记  
+                msgType = "ok";
+            }
+            $.CurrentDialog.alertmsg(msgType, result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+        });
+    });
+</script>
+<div class="bjui-pageHeader">
+</div>
+<div class="bjui-pageContent">
+    <div>
+        <!-- 内容区 -->
+        <ul id="roleSetMenuZtree" class="ztree" data-toggle="ztree"
+            data-check-enable="true"
+            data-options="{nodes:@Model}"></ul>
+    </div>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn btn-close" data-icon="close">关闭</button>
+        </li>
+        <li>
+            <button type="button" class="btn btn-green" id="btnSave" data-icon="close">保存</button>
+        </li>
+    </ul>
+</div>
+
+

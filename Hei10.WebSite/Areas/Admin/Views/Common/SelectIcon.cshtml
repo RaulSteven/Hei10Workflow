@@ -1,0 +1,14 @@
+﻿@model string[]
+<div class="bjui-pageContent">
+    <div class="icon-wrap p10 ">
+        @foreach (var icon in Model)
+            {
+            <a href="javascript:;" data-toggle="lookupback" data-args="{Icon:'@icon'}"title="选择本项"><i class="fa fa-@icon"></i></a>
+        }
+    </div>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">关闭</button></li>
+    </ul>
+</div>

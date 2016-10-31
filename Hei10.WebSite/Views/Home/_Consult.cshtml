@@ -1,0 +1,36 @@
+﻿@model Hei10.WebSite.Models.ConsultModel
+<div class="contact">
+    <div class="bg-grey"></div>
+    <div class="title"><h1 class="bg-bottom">联系我们</h1><p>contact me</p></div>
+    @using (Ajax.BeginForm("Consult",null, new AjaxOptions { UpdateTargetId = "page6",OnSuccess = "doSucceed" },new {@class="info clearfix" }))
+    {
+        @Html.AntiForgeryToken() 
+        <div class="left">
+            <h2>南宁市青秀区佛子岭18号德利•东盟国际文化广场B1栋13A层</h2><strong>+86-771-5590799</strong>
+        </div>
+        <div class="right">
+            <ul>
+                <li>
+                    @Html.TextBoxFor(m => m.UserName, new {@placeholder = "姓名", @class = "input-text-default w-all"})
+                    @Html.ValidationMessageFor(m => m.UserName)
+                </li>
+                <li>
+                    @Html.TextBoxFor(m => m.Email, new {@placeholder = "电子邮箱", @class = "input-text-default w-all"})
+                    @Html.ValidationMessageFor(m => m.Email)
+                </li>
+                <li>
+                    @Html.TextAreaFor(m => m.Contents, new {@placeholder = "内容", @class = "input-textarea-default w-all"})
+                    @Html.ValidationMessageFor(m => m.Contents)
+                </li>
+                <li><input type="submit" value="提交" class="input-submit-default w-all mt20"></li>
+            </ul>
+        </div> 
+    }
+</div>
+<script type="text/javascript">
+    var doSucceed = function() {
+        if ('@Model.IsSucceed' == 'True') {
+            $('.w-all').val('');
+        }
+    }
+</script>

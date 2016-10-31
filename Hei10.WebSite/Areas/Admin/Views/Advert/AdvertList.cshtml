@@ -1,0 +1,93 @@
+﻿@using Hei10.Web.Framework.Extensions
+@model IPagedList<AdvertBizModel>
+@{
+    string name = ViewBag.name;
+    long id = ViewBag.id;
+    Layout = null;
+    SysUser user = ViewBag.CurrUser;
+    string tabId = Request["tabId"];
+}
+<script type="text/javascript">
+    function delete_callback(json) {
+        $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .bjuiajax('refreshDiv', 'advertlist');
+    }
+</script>
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@Url.Action("AdvertList")" method="post">
+        <input type="hidden" name="pageSize" value="@Model.PageSize">
+        <input type="hidden" name="pageCurrent" value="@Model.PageNumber">
+        <input type="hidden" name="id" value="@id">
+        <input type="hidden" name="orderField" value="@Request["orderField"]">
+        <input type="hidden" name="orderDirection" value="@Request["orderDirection"]">
+        <div class="bjui-searchBar">
+            <label>标题：</label><input type="text" value="@name" name="name" class="form-control" size="15">
+            <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            @if (user.HasButton(SysButton.Edit))
+            {
+                <a href="@Url.Action("AdvertEdit", new {adPosId = id,tabId})" class="btn btn-green" data-toggle="navtab" data-id="advert-edit">添加广告</a>
+                <a href="@(Url.Action("AdvertEdit", new {adPosId = id,tabId}) + "&id={#bjui-selected}")" class="btn btn-blue" data-toggle="navtab" data-icon="edit" data-id="advert-edit" data-title="修改广告">修改广告</a>
+            }
+            @if (user.HasButton(SysButton.Delete))
+            {
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn-default dropdown-toggle" data-toggle="dropdown" data-icon="copy">复选框-批量操作<span class="caret"></span></button>
+                        <ul class="dropdown-menu right" role="menu">
+                            <li><a href="@Url.Action("BatchDelete", "Advert")" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？" data-idname="ids" data-group="ids" data-callback="delete_callback">删除选中</a></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%">
+        <thead>
+            <tr>
+                <th width="26"><input type="checkbox" class="checkboxCtrl" data-group="ids" data-toggle="icheck"></th>
+                <th data-order-field="Name" align="center">名称</th>
+                <th data-order-field="StartTime" align="center">开始时间</th>
+                <th data-order-field="EndTime" align="center">结束时间</th>
+                <th data-order-field="SortIndex" align="center">排序</th>
+                <th data-order-field="Status" align="center">状态</th>
+                <th data-order-field="AdType" align="center">类型</th>
+                <th data-order-field="CreateDateTime" align="center">创建时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-id="@(item.Id)">
+                    <td width="26"><input type="checkbox" name="ids" data-toggle="icheck" value="@(item.Id)"></td>
+                    <td>@item.Name</td>
+                    <td>@item.StartTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@item.EndTime.ToDisplayDateTime()</td>
+                    <td>@item.SortIndex</td>
+                    <td>@item.Status.GetDescriotion()</td>
+                    <td>@item.AdType.GetDescriotion()</td>
+                    <td>@item.CreateDateTime.ToDisplayDateTime()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>每页&nbsp;</span>
+        <div class="selectPagesize">
+            <select data-toggle="selectpicker" data-toggle-change="changepagesize">
+                <option value="30">30</option>
+                <option value="60">60</option>
+                <option value="120">120</option>
+                <option value="150">150</option>
+            </select>
+        </div>
+        <span>&nbsp;条，共 @(Model.TotalItemCount) 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="@(Model.TotalItemCount)" data-page-size="@Model.PageSize" data-page-current="@Model.PageNumber">
+    </div>
+</div>

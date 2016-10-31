@@ -1,0 +1,305 @@
+﻿@model LoginModel
+@{
+    Layout = null;
+    var configRep = DependencyResolver.Current.GetService<ISysConfigRepository>();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>@configRep.WebSiteName - 系统登录</title>
+    <link href="/Res/b-jui/BJUI/themes/css/bootstrap.min.css" rel="stylesheet">
+    <script src="~/Res/home/js/jquery-1.7.1.min.js"></script>
+    <style type="text/css">
+                * {
+                    font-family: "Verdana", "Tahoma", "Lucida Grande", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+                }
+
+                body {
+                    background: url(/Res/b-jui/images/loginbg_01.jpg) no-repeat center center fixed;
+                    -webkit-background-size: cover;
+                    -moz-background-size: cover;
+                    -o-background-size: cover;
+                    background-size: cover;
+                }
+
+                a:link {
+                    color: #285e8e;
+                }
+
+                .main_box {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    margin-top: -260px;
+                    margin-left: -500px;
+                    width: 1000px;
+                    height: 480px;
+                    background: #231915;
+                }
+
+                .setting {
+                    position: absolute;
+                    bottom: 40px;
+                    right: 40px;
+                    width: 36px;
+                    height: 36px;
+                }
+
+                .login_logo {
+                    float: left;
+                    width: 500px;
+                    height: 480px;
+                    text-align: center;
+                    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#016436+1,6fcc25+100 */
+                    background: -moz-linear-gradient(-45deg, #016436 1%, #6fcc25 100%); /* FF3.6-15 */
+                    background: -webkit-linear-gradient(-45deg, #016436 1%,#6fcc25 100%); /* Chrome10-25,Safari5.1-6 */
+                    background: linear-gradient(135deg, #016436 1%,#6fcc25 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#016436', endColorstr='#6fcc25',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+                }
+
+                    .login_logo img {
+                        padding-top: 120px;
+                    }
+
+                .login_msg {
+                    text-align: center;
+                    font-size: 16px;
+                }
+
+                .login_form {
+                    float: left;
+                    width: 500px;
+                    padding: 50px;
+                    height: 480px;
+                    background: #fff;
+                    font-size: 16px;
+                }
+
+                .login_box .form-control {
+                    display: inline-block;
+                    *display: inline;
+                    zoom: 1;
+                    width: auto;
+                    font-size: 18px;
+                }
+
+                    .login_box .form-control.w-all {
+                        width: 100%;
+                        height: 40px;
+                    }
+
+                    .login_box .form-control.w-half {
+                        width: 50%;
+                        height: 40px;
+                    }
+
+                .login_box .form-group {
+                    margin-bottom: 20px;
+                }
+
+                    .login_box .form-group label.t {
+                        width: 120px;
+                        text-align: right;
+                        cursor: pointer;
+                    }
+
+                    .login_box .form-group.space {
+                        border-top: 1px #FFF dotted;
+                    }
+
+                    .login_box .form-group img {
+                        margin-top: 1px;
+                        height: 32px;
+                        vertical-align: top;
+                    }
+
+                .login_box .m {
+                    cursor: pointer;
+                    font-size: 14px;
+                }
+
+                .bottom {
+                    width: 100%;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #fff;
+                    position: fixed;
+                    bottom: 30px;
+                }
+
+                .btn-login {
+                    width: 100%;
+                    background: #016436;
+                    text-align: center;
+                    color: #fff;
+                }
+
+                    .btn-login:hover {
+                        color: #fff;
+                    }
+
+                    .btn-login:active {
+                        box-shadow: inset 0 3px 10px rgba(0, 0, 0, .2);
+                    }
+
+                .login-title {
+                    font-size: 30px;
+                    margin-top: 0px;
+                    margin-bottom: 20px;
+                }
+
+                .input-checkbox {
+                    display: inline-block;
+                    vertical-align: middle;
+                    background: url(/Res/b-jui/images/icon-default.png) no-repeat left center;
+                    padding: 0 10px 0 25px;
+                    cursor: pointer;
+                    opacity: .8;
+                }
+
+                    .input-checkbox:hover {
+                        opacity: 1;
+                    }
+
+                    .input-checkbox.cur {
+                        background: url(/Res/b-jui/images/icon-kj.jpg) no-repeat left center;
+                        opacity: 1;
+                    }
+
+                /*
+        ***************************
+        *  type: 表单验证提示
+        *  page: 全局
+        ***************************
+        */
+                .field-validation-error {
+                    width: 100%;
+                    line-height: 20px;
+                    display: block;
+                    color: #ff7146;
+                }
+
+                    .field-validation-error span {
+                        color: #ff7146;
+                        font-size: 13px;
+                    }
+
+                .field-validation-tip {
+                    width: 100%;
+                    line-height: 20px;
+                }
+
+                    .field-validation-tip span {
+                        color: #ffcc00;
+                    }
+
+                .validation-summary-errors {
+                    display: block;
+                    width: 100%;
+                    padding: 3px 0;
+                }
+
+                    .validation-summary-errors ul {
+                        list-style: none;
+                        padding: 0px;
+                        margin: 0px;
+                    }
+
+                        .validation-summary-errors ul li {
+                            display: block;
+                            line-height: 20px;
+                            margin-bottom: 5px;
+                            font-size: 12px;
+                            color: #ff7146;
+                            padding-left: 20px;
+                            background: no-repeat left 2px url( data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAAK/INwWK6QAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABjFBMVEX////8hWr6hGn5gmf3gGX1fmPzfGHxel/vd136hGn5gmjrc1npcVb5g2j4gWbkbFLiaU/4gWf2f2XeZErbYkj1fmPXXUPxel/SWD7tdlvOUzrpcVfKTzXlbVLGSjHhaE7CRi3cY0naYEbARCu+QinVXELTWT+/Qym9QSfPVDrMUji9QSi7PybITTPGSzHESC/CRizARCq+Qii8QCa6PiTug270ppL4tKDzppHpfWjxl4T7van4o4r2iWv4oon6vKjskn/wl4P1gmP////zfmHzfGD5uabqjXvsgWz1gWL0gGLxel/weF/vdl34taXdcF34oYjuc1zscFvxk4LsmIn4tqH0hGfrblrqbFnpb1/xqJv3s6DygGX62dPoaVjnZ1fnbF3xpZnwn470mYTxnZDzr6bmZVblYlXriX3nkYXgc2D3s6TjYVTiX1PyqZ/RYVDmiHj1sKPtkonskojhXVLdfW/jhHX0rKHsi3/kZ1zjZlvqh33xqJ/dfG/UZFLnkITuoJXtn5XljoPOXUxv/N2cAAAANXRSTlMAI33b8/PbfSNT5uZTU/T0UyLl5SJ+ftvb9vb29tvbfn4i5eUiU/T0U1Pm5lMjfdvz89t9I9s3K3gAAAABYktHRACIBR1IAAAA00lEQVQY02NgwAYYmZhZWNnYOWB8Ti5TM3NzC0tuHgifl8/K2sbW1s7egV8AxBcUcrR2cnJ2dnF1cxcWAQqIelg7eXo5O3v7+Pr5iwEFxC0CvFxcnZ19A4OCQySAApKhYa7ePs7OQeERkVFSQAHp6Bgf38BY54i4+IREGaCAbFJyYFB4Smp8WnpGphxQQD4rOzwiztk5PSc3L18BKKCoVFAYn1ZUnFuSV6qsAnKIqlpZeUVlVXVNrboGxKmaWnX1DY1Nzdo6MM/o6ukbGBoZm2D1OQCTlS4IqAZXeAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxNS0wNy0yNVQyMTo0OTo0NCswODowMBAuKfMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTEtMDUtMThUMTk6NTk6MDArMDg6MDCEXx78AAAATnRFWHRzb2Z0d2FyZQBJbWFnZU1hZ2ljayA2LjguOC0xMCBRMTYgeDg2XzY0IDIwMTUtMDctMTkgaHR0cDovL3d3dy5pbWFnZW1hZ2ljay5vcmcFDJw1AAAAGHRFWHRUaHVtYjo6RG9jdW1lbnQ6OlBhZ2VzADGn/7svAAAAF3RFWHRUaHVtYjo6SW1hZ2U6OkhlaWdodAAxNh2vXm8AAAAWdEVYdFRodW1iOjpJbWFnZTo6V2lkdGgAMTblAJ7iAAAAGXRFWHRUaHVtYjo6TWltZXR5cGUAaW1hZ2UvcG5nP7JWTgAAABd0RVh0VGh1bWI6Ok1UaW1lADEzMDU3MTk5NDAscL2CAAAAEXRFWHRUaHVtYjo6U2l6ZQA3MDFCQg1PSCMAAABUdEVYdFRodW1iOjpVUkkAZmlsZTovLy9ob21lL3d3d3Jvb3Qvd3d3LmVhc3lpY29uLm5ldC9jZG4taW1nLmVhc3lpY29uLmNuL3NyYy8xNS8xNTc2LnBuZ58bx8QAAAAASUVORK5CYII=);
+                        }
+
+                .validation-summary-valid {
+                    display: none;
+                }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            choose_bg();
+
+            $('.input-checkbox').click(function () {
+                var $isRem = $('#IsRemember');
+                if ($(this).hasClass('cur')) {
+                    $(this).removeClass('cur');
+                    $isRem.val('false');
+                } else {
+                    $(this).addClass('cur');
+                    $isRem.val('true');
+                }
+            });
+
+            $('#captcha_img').click(function () {
+                changeCode();
+            });
+        });
+        function genTimestamp() {
+            var time = new Date();
+            return time.getTime();
+        }
+        function changeCode() {
+            $("#captcha_img").attr("src", "@Url.GetVerifyCode()?t=" + genTimestamp());
+        }
+        function choose_bg() {
+            var bg = Math.floor(Math.random() * 9 + 1);
+            $('body').css('background-image', 'url(/Res/b-jui/images/loginbg_0' + bg + '.jpg)');
+        }
+    </script>
+</head>
+<body>
+    <!--[if lte IE 7]>
+    <style type="text/css">
+    #errorie {position: fixed; top: 0; z-index: 100000; height: 30px; background: #FCF8E3;}
+    #errorie div {width: 900px; margin: 0 auto; line-height: 30px; color: orange; font-size: 14px; text-align: center;}
+    #errorie div a {color: #459f79;font-size: 14px;}
+    #errorie div a:hover {text-decoration: underline;}
+    </style>
+    <div id="errorie"><div>您还在使用老掉牙的IE，请升级您的浏览器到 IE8以上版本 <a target="_blank" href="http://windows.microsoft.com/zh-cn/internet-explorer/ie-8-worldwide-languages">点击升级</a>&nbsp;&nbsp;强烈建议您更改换浏览器：<a href="http://down.tech.sina.com.cn/content/40975.html" target="_blank">谷歌 Chrome</a></div></div>
+    <![endif]-->
+    <div class="main_box">
+        <div class="login_box">
+            <div class="login_logo">
+                <img src="~/Res/b-jui/images/logo-kj.png">
+            </div>
+            <div class="login_form">
+                @using (Html.BeginForm())
+                {
+                    <h1 class="login-title">登录</h1>
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.UserName, new { @placeholder = "用户名" , @class = "form-control w-all in", autocomplete = "off" })
+                        @Html.ValidationMessageFor(m => m.UserName)
+                    </div>
+                    <div class="form-group">
+                        @Html.PasswordFor(m => m.Password, new { @placeholder = "密码", @class = "form-control w-all in" })
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.ValidateCode, new { @placeholder = "验证码", @class = "form-control w-half in"})
+                        <img id="captcha_img" alt="点击更换" title="点击更换" src="@Url.GetVerifyCode()" class="m">
+                        @Html.ValidationMessageFor(m => m.ValidateCode)
+                    </div>
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.IsRemember)
+                        <span class="input-checkbox @(Model.IsRemember?"cur":"")">记住登录账号</span>
+                    </div>
+                    <div class="form-group space">
+                        <input type="submit" id="login_ok" value="&nbsp;登&nbsp;录&nbsp;" class="btn btn-login btn-lg">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="setting"><a href="javascript:;" onclick="choose_bg();" title="更换背景"><img src="/Res/b-jui/images/icon-qh.png" alt=""></a></div>
+    <div class="bottom">@configRep.WebSiteCopyRight @configRep.WebSiteICP</div>
+    <script src="/Res/home/js/jquery.validate.min.js"></script>
+    <script src="/Res/home/js/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

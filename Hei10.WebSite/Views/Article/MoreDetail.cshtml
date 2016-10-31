@@ -1,0 +1,28 @@
+﻿@using System.Globalization
+@model JR.Domain.Models.Article
+@{ 
+    Layout = "~/Views/Shared/_Layout_Menu.cshtml";
+    ViewBag.HideTitle = true;
+    ViewBag.Title = Model.Title;
+}
+<div class="new-info">
+    <ul>
+        <li>
+            <div class="time"><p>@(Model.ArticleDateTime.ToString("MMM,yyyy", DateTimeFormatInfo.InvariantInfo))</p><span>@(Model.ArticleDateTime.Month)</span></div>
+            <div class="new"><a href="@Url.ArticleDetail(Model.Id)" title="@Model.Title">@Model.Title</a></div>
+        </li>
+    </ul>
+    <div class="new-meg">
+        <p>
+            @if (!string.IsNullOrEmpty(Model.Source))
+            {
+                @Html.Raw("发布："+ Model.Source + " <span>/</span>")
+            }
+            浏览次数：@Model.ViewCount
+        </p>
+
+    </div> 
+    <div class="info">
+        @Html.Raw(Model.ArticleContent)
+    </div> 
+</div>

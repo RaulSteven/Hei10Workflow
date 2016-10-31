@@ -1,0 +1,468 @@
+﻿@model List<FilterGroupModel>
+@{
+    long roleId = ViewBag.roleId;
+    SysUser user = ViewBag.CurrUser;
+}
+<script>
+    var add = true;
+    var menuItemClick = function (event, treeId, treeNode) {
+        //alert(treeNode);
+        $.CurrentNavtab.find('#msg_holder').text('');
+        $.CurrentNavtab.find('#Id').val(treeNode.id);
+        $.CurrentNavtab.find('#Source').val(treeNode.source);
+        $.CurrentNavtab.find('#Name').val(treeNode.name);
+        currSourceProperty = treeNode.spro;
+        //动态增加Filter
+        setFilterGroup(treeNode.filtergroup);
+        add = false;
+    };
+
+    $.CurrentNavtab.find('#btnFilterAdd').click(function () {
+        addFilter();
+    });
+
+    var addFilter = function () {
+        clearInput();
+        add = true;
+    };
+
+
+    var clearInput = function () {
+        $.CurrentNavtab.find('#Id').val('0');
+        $.CurrentNavtab.find('#msg_holder').val('');
+        $.CurrentNavtab.find('#Source').val('');
+        $.CurrentNavtab.find('#Name').val('');
+        var $divEdit = $.CurrentNavtab.find('.allot-wrap');
+        $divEdit.find('.rowbox').remove();
+        $divEdit.find('.item').remove();
+    };
+
+    var setFilterGroup = function (filterGroup) {
+        var $divEdit = $.CurrentNavtab.find('.allot-wrap');
+        $divEdit.find('.rowbox').remove();
+        $divEdit.find('.item').remove();
+
+        $divEdit.find('.pb10 select').val(filterGroup.Op).selectpicker('refresh');
+        setFilterContent(filterGroup, $divEdit.find('.pb10'));
+    };
+
+    var setFilterContent = function (filterGroup, $divOp) {
+        if (filterGroup.ListRule && filterGroup.ListRule.length > 0) {
+            var ruleLength = filterGroup.ListRule.length;
+            for (var i = 0; i < ruleLength; i++) {
+                var $row = getRowHtml(filterGroup.ListRule[i]);
+                $divOp.before($row);
+            }
+        }
+        if (filterGroup.ListGroup && filterGroup.ListGroup.length > 0) {
+            var groupLength = filterGroup.ListGroup.length;
+            for (var i = 0; i < groupLength; i++) {
+                var $group = getGroupHtml(filterGroup.ListGroup[i]);
+                $divOp.before($group);
+            }
+        }
+    };
+
+    var currSourceProperty;
+
+    var rowIndex = 0;
+    //增加行
+    var addRow = function (btnAddRow) {
+        var $btnAddRow = $(btnAddRow);
+        var $rowClone = getRowHtml();
+        $btnAddRow.parent().before($rowClone);
+    };
+
+    var getRowHtml = function (filterRule) {
+        filterRule = filterRule || {
+            Field: currSourceProperty[0],
+            Op: 0,
+            Value: ''
+        };
+        var $rowTemplate = $.CurrentNavtab.find('#divRowTemplate');
+        var $rowClone = $rowTemplate.clone().removeAttr("id").show();
+
+        var html = '';
+        var propertyIndex = currSourceProperty.length;
+        for (var i = 0; i < propertyIndex; i++) {
+            html += '<option value="' + currSourceProperty[i].Name + '" data-type="+' + currSourceProperty[i].TypeName + '">' + currSourceProperty[i].DisplayName + '</option>';
+        }
+        $rowClone.find('.col1 select').html(html).val(filterRule.Field).selectpicker('refresh');
+        propertyChange($rowClone.find('.col1 select'), filterRule.Value);
+        $rowClone.find('.col2 select').val(filterRule.Op).selectpicker('refresh');
+        $rowClone.find('.col3 input').attr('id', 'txt_ruleValue_' + rowIndex++).val(filterRule.Value);
+        return $rowClone;
+    };
+
+    //删除行
+    var delRow = function (btnDel) {
+        $(btnDel).parent().remove();
+    };
+
+    //增加组
+    var addGroup = function (btnAdd) {
+        var $btnAddGroup = $(btnAdd);
+
+        var $groupClone = getGroupHtml();
+
+        $btnAddGroup.parent().before($groupClone);
+    };
+
+    var getGroupHtml = function (group) {
+        group = group || {
+            Op: 0,
+            ListRule: null,
+            ListGroup: null
+        };
+        var $groupTemplate = $.CurrentNavtab.find('#divGroupTemplate');
+        var $groupClone = $groupTemplate.clone().removeAttr("id").show();
+
+        setFilterContent(group, $groupClone.find('.btnrow'));
+        $groupClone.find('.btnrow select').val(group.Op).selectpicker('refresh');
+        return $groupClone;
+    };
+
+    //删除组
+    var delGroup = function (btnDel) {
+        $(btnDel).parent().parent().remove();
+    };
+
+    $.CurrentNavtab.find('#btnSaveFilter').click(function () {
+        updateFilterGroup();
+    });
+
+    var updateFilterGroup = function () {
+        var zTree = $.fn.zTree.getZTreeObj("menuFilterZtree");
+        var currNode = zTree.getSelectedNodes()[0];
+
+        //获取Json字符串
+        //Post回后台
+        var $divRules = $.CurrentNavtab.find('.allot-wrap');
+        var validateResult = true;
+        $.CurrentNavtab.find('#formRules').find('input[name="ruleValue"]').on('invalid.field', function (e, form, errors) {
+            //do something...
+            validateResult = false;
+        }).trigger("validate");
+
+        if (!validateResult) {
+            return;
+        }
+
+        var group = {};
+        group.Op = $divRules.find('.pb10 select').val();
+        //寻找ListRule
+        group.ListRule = getListRule($divRules);
+
+        group.ListGroup = [];
+        //寻找ListGroup
+        $divRules.children('.item').each(function (index, ele) {
+            var groupItem = getGroup(ele);
+            group.ListGroup.push(groupItem);
+        });
+
+        var filterGroups = JSON.stringify(group);
+        $('#msg_holder').text(filterGroups);
+
+        $.post('@Url.Action("SetFilterRule")',
+            {
+                id: $.CurrentNavtab.find('#Id').val(),
+                name: $.CurrentNavtab.find('#Name').val(),
+                source: $.CurrentNavtab.find('#Source').val(),
+                roleId: '@roleId',
+                filterGroup: filterGroups
+            },
+            function (result) {
+                if (result.statusCode != 200) {
+                    $(this).bjuiajax('ajaxDone', result);
+                    return;
+                }
+                if (add) {
+                    var newNode = { "id": result.Data.Id, "name": result.Data.Name, "spro": result.Data.SourceProperties, "source": result.Data.Source, "filterGroup": group };
+                    var addNodeArr = zTree.addNodes(null, newNode);
+                    $.CurrentNavtab.find('#msg_holder').text('');
+                    $.CurrentNavtab.find('#Id').val(result.Data.Id);
+                    $.CurrentNavtab.find('#Source').val(result.Data.Source);
+                    $.CurrentNavtab.find('#Name').val(result.Data.Name);
+                    zTree.selectNode(addNodeArr[0]);
+                    add = false;
+                    currNode = zTree.getSelectedNodes()[0];
+                }
+                currNode.filtergroup = group;
+                zTree.updateNode(currNode);
+                $.CurrentNavtab.alertmsg('ok', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+            }
+        );
+    };
+
+    var getListRule = function ($divRules) {
+        var lstRule = [];
+        $divRules.children('.rowbox').each(function (index, ele) {
+            var rule = {
+                "Field": $(ele).find('.col1 select').val(),
+                "Op": $(ele).find('.col2 select').val()
+            };
+            if (currentArr.indexOf(rule.Field) > -1) {
+                rule.Value = $(ele).find('.col3 select').val().join();
+            } else {
+                rule.Value = $(ele).find('.col3 input').val();
+            }
+            lstRule.push(rule);
+        });
+        return lstRule;
+    };
+
+    var getGroup = function (groupItem) {
+        var $groupItem = $(groupItem);
+        var group = {};
+        group.Op = $groupItem.children('.btnrow').find('select').val();
+        group.ListRule = getListRule($groupItem);
+        group.ListGroup = [];
+        $groupItem.children('.item').each(function (index, ele) {
+            var groupEle = getGroup(ele);
+            group.ListGroup.push(groupEle);
+        });
+        return group;
+    };
+
+    var currentArr = ['@FilterCurrent.CurrentUserId', '@FilterCurrent.CurrentRoleId', '@FilterCurrent.CurrentDeptId'];
+    var propertyChange = function (ddt, value) {
+        //alert($(ddt).val());
+        setRuleOp(ddt);
+        var $col3 = $(ddt).parent().parent().find('.col3');
+        var currPro = $(ddt).val();
+        if (currentArr.indexOf(currPro) > -1) {
+
+            $.post('@Url.Action("GetCurrResources")', { curr: currPro }, function (result) {
+                if (result.length <= 0) {
+                    return;
+                }
+                if (value) {
+                    value = value.split(',');
+                } else {
+                    value = result[0].Value;
+                }
+                var $sel = $col3.find('select');
+                var resLength = result.length;
+
+
+                var html = '';
+                for (var i = 0; i < resLength; i++) {
+                    html += '<option value="' + result[i].Value + '">' + result[i].Text + '</option>';
+                }
+                $sel.html(html).val(value).selectpicker('refresh');
+                $col3.find('.bootstrap-select').show();
+                $col3.find('input').val('').attr('novalidate', '').hide();
+                $col3.find('.msg-box').remove();
+                //$sel.show();
+            });
+            return;
+        }
+        //隐藏下拉，显示输入框
+        $col3.find('input').removeAttr('novalidate').show();
+        $col3.find('.bootstrap-select').hide();
+
+    };
+
+    var setRuleOp = function (ddt) {
+
+        //设置条件，有三种：String Enum 其他
+        //var typeName = $()
+        var typeName = $(ddt).find('option:selected').attr('data-type');
+        var opArr = [];
+        opArr.push({ Value: '@FilterRuleOp.Equal.ToShort()', Text: '@FilterRuleOp.Equal.GetDescriotion()' });
+        opArr.push({ Value: '@FilterRuleOp.NotEqual.ToShort()', Text: '@FilterRuleOp.NotEqual.GetDescriotion()' });
+        opArr.push({ Value: '@FilterRuleOp.In.ToShort()', Text: '@FilterRuleOp.In.GetDescriotion()' });
+        opArr.push({ Value: '@FilterRuleOp.Notin.ToShort()', Text: '@FilterRuleOp.Notin.GetDescriotion()' });
+        switch (typeName) {
+            case '+Int64':
+            case '+Int32':
+            case '+DateTime':
+                //= > >= < <= <> 包含 不包含
+                opArr.push({ Value: '@FilterRuleOp.Greater.ToShort()', Text: '@FilterRuleOp.Greater.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.GreaterOrEqual.ToShort()', Text: '@FilterRuleOp.GreaterOrEqual.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.Less.ToShort()', Text: '@FilterRuleOp.Less.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.LessOrEqual.ToShort()', Text: '@FilterRuleOp.LessOrEqual.GetDescriotion()' });
+                break;
+            case '+String':
+                //= > >= < <= <> like startwith endwith 包含 不包含
+                opArr.push({ Value: '@FilterRuleOp.Greater.ToShort()', Text: '@FilterRuleOp.Greater.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.GreaterOrEqual.ToShort()', Text: '@FilterRuleOp.GreaterOrEqual.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.Less.ToShort()', Text: '@FilterRuleOp.Less.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.LessOrEqual.ToShort()', Text: '@FilterRuleOp.LessOrEqual.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.Like.ToShort()', Text: '@FilterRuleOp.Like.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.StartWith.ToShort()', Text: '@FilterRuleOp.StartWith.GetDescriotion()' });
+                opArr.push({ Value: '@FilterRuleOp.EndWith.ToShort()', Text: '@FilterRuleOp.EndWith.GetDescriotion()' });
+                break;
+            default:
+        }
+        var opArrLength = opArr.length;
+        var html = '';
+        for (var i = 0; i < opArrLength; i++) {
+            html += '<option value="' + opArr[i].Value + '">' + opArr[i].Text + '</option>';
+        }
+        $(ddt).parent().parent().find('.col2 select').html(html).selectpicker('refresh');
+        delete opArr;
+        opArr = null;
+    };
+    var setSource = function (btn) {
+        var $btn = $(btn);
+        var source = $.CurrentNavtab.find('#Source').val();
+
+        var validateResult = true;
+        $.CurrentNavtab.find('input[id="Source"]').on('invalid.field', function (e, form, errors) {
+            //do something...
+            validateResult = false;
+        }).trigger("validate");
+
+        if (!validateResult) {
+            return;
+        }
+
+        $btn.html('加载中...');
+        if (source) {
+            $.post('@Url.Action("GetSource")', { source: source }, function (result) {
+                $btn.html('加载成功，可重新加载');
+                currSourceProperty = result;
+                if (result ==null || result.length <= 0) {
+                    $btn.html('资源出错，重新加载');
+                    return;
+                }
+            });
+        }
+        var $divEdit = $.CurrentNavtab.find('.allot-wrap');
+        $divEdit.find('.rowbox').remove();
+        $divEdit.find('.item').remove();
+    };
+    $.CurrentNavtab.find('#btnFilterDelete').click(function () {
+        var zTree = $.fn.zTree.getZTreeObj("menuFilterZtree");
+        var currNode = zTree.getSelectedNodes()[0];
+        if (!currNode) {
+            $.CurrentNavtab.alertmsg('error', '请选择要删除的节点！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+
+        $.CurrentNavtab.alertmsg('confirm', '确定要删除 ' + currNode.name + ' 吗？',
+        {
+            displayMode: 'slide',
+            displayPosition: 'topcenter',
+            okCall: function () {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                $.post('@Url.Action("DeleteFilterRule")', { id: currNode.id, __RequestVerificationToken: token }, function (result) {
+                    if (result.statusCode == 200) {
+                        zTree.removeNode(currNode);
+                        addFilter();
+                        $.CurrentNavtab.alertmsg('ok', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                        return;
+                    }
+                    $.CurrentNavtab.alertmsg('error', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                });
+            }
+        });
+    });
+</script>
+
+<div class="bjui-pageHeader">
+    <!-- 顶部模块[如：功能按钮、搜索面板] -->
+    <div class="btn-group" role="group">
+
+        <button type="button" id="btnFilterAdd" class="btn btn-blue" data-icon="plus">添加</button>
+
+    </div>
+    <div class="btn-group" role="group">
+
+        <button type="button" id="btnFilterDelete" class="btn btn-red" data-icon="remove">删除</button>
+
+    </div>
+</div>
+<div class="bjui-pageContent tableContent">
+    <div style="float:left; width:200px;" class="fa-border">
+        <h3>数据源区</h3>
+        <!-- 内容区 -->
+        <ul id="menuFilterZtree" class="ztree" data-toggle="ztree" data-on-click="menuItemClick">
+            @foreach (var item in Model)
+            {
+                <li data-id="@item.Id" data-spro="@(item.SourceProperties)" data-source="@item.Source" data-filterGroup="@(item.FilterGroups)" data-pid="0" data-name="@item.Name">@item.Name</li>
+            }
+        </ul>
+    </div>
+    <div style="margin-left:210px;margin-top:10px; height:99.9%; overflow:hidden;" class="fa-border">
+        <h3>数据权限编辑区</h3>
+        <fieldset>
+            <form action="@Url.Action("SetFilterRule")" id="formRules" data-toggle="validate" data-alertmsg="false">
+                <input type="hidden" name="Id" id="Id" value="0" />
+                <p>
+                    <label class="x85">说明：</label><br />
+                    1、值可以输入“CurrentUserId”表示当前用户的Id；<br />
+                    2、当条件的类型不是String时，不能选择判断条件“相似、以xx开始、以xx结尾”；<br />
+                    3、判断条件选择“包含于、不包含与”时，多个值以英文逗号“,”隔开，如：1,2,3,4 or steven,martin,winni<br />
+                    4、当条件为“当前用户、当前角色、当前部门”时，值为下拉选择，需要注意只有条件为“包含于、不包含于”时才能选择多个值
+                </p>
+                <p>
+                    <label class="x85">资源：</label>
+                    <input type="text" id="Source" name="ruleValue" data-rule="required;length[~20]"> <button type="button" class="btn btn-success" onclick="setSource(this);" data-icon="file-text-o" data-placement="bottom" title="加载">加载</button>
+                    <div id="msg_holder"></div>
+                </p>
+                <p>
+                    <label class="x85">标题：</label>
+                    <input type="text" id="Name" name="ruleValue" data-rule="required;length[~20]">
+                    <div id="msg_holder_Name"></div>
+                </p>
+                <p>
+                    <label class="x85">条件规则：</label>
+                    <div class="allot-wrap">
+                        <div class="pb10">
+                            <select data-toggle="selectpicker">
+                                @foreach (var item in FilterGroupOp.And.GetSListInt())
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <button type="button" class="btn btn-success" onclick="addRow(this);" data-icon="file-text-o" data-placement="bottom" title="增加条件">增加条件</button>
+                            <button type="button" class="btn btn-primary" onclick="addGroup(this);" data-icon="table" data-placement="bottom" title="增加分组">增加分组</button>
+                        </div>
+                    </div>
+                </p>
+                <p class="text-center"><button type="button" id="btnSaveFilter" class="btn-default">提 交</button></p>
+            </form>
+        </fieldset>
+    </div>
+    <div class="rowbox clearfix" id="divRowTemplate" style="display:none">
+        <div class="col1">
+            <select onchange="propertyChange(this);"></select>
+        </div>
+        <div class="col2">
+            <select>
+                @foreach (var item in FilterRuleOp.EndWith.GetSListInt())
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col3">
+            <input type="text" class="form-control" name="ruleValue" data-rule="required" placeholder="请输入值">
+            <select style="display:none" multiple></select>
+        </div>
+        <a href="javascript:;" onclick="delRow(this); return false;" class="close" title="删除"><i class="fa fa-close"></i></a>
+    </div>
+    <div class="item" id="divGroupTemplate" style="display:none">
+        <div class="btnrow">
+            <select data-width="50">
+                @foreach (var item in FilterGroupOp.And.GetSListInt())
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+            <button type="button" class="btn btn-success" onclick="addRow(this);" data-icon="file-text-o" data-placement="bottom" title="增加条件">增加条件</button>
+            <button type="button" class="btn btn-primary" onclick="addGroup(this);" data-icon="table" data-placement="bottom" title="增加分组">增加分组</button>
+            <button type="button" class="btn btn-danger" onclick="delGroup(this);" data-icon="table" data-placement="bottom" title="删除分组">删除分组</button>
+        </div>
+    </div>
+
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn-close">关闭</button>
+        </li>
+    </ul>
+</div>

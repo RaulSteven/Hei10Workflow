@@ -1,0 +1,39 @@
+﻿@model LeaveInfo
+<table class="table-bordered table-condensed table-hover" width="100%">
+    <tbody>
+        <tr>
+            <td align="center"><h3>申请假期</h3></td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtDays" class="control-label x90">请假人：</label>
+                <input type="text" readonly="readonly"  value="@Model.CreateUserName" size="20">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtDays" class="control-label x90">请假天数：</label>
+                <input type="text" readonly="readonly" value="@Model.Days" size="20">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtLeaveType" class="control-label x85">请假类型：</label>
+                <input type="text" readonly="readonly"  value="@Model.LeaveType" size="20">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtStartTime" class="control-label x85">请假时间：</label>
+                <input type="text"  readonly="readonly"  value="@Model.StartTime.ToDisplayDate()" size="30"> -
+                <input type="text"  readonly="readonly"  value="@Model.EndTime.ToDisplayDate()"  size="30">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtRemark" class="control-label x85">请假事由：</label>
+                <textarea cols="30" readonly="readonly"   class="form-control" style="width: 500px; margin: 0px; height: 46px;">@Model.Remark</textarea>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,27 @@
+﻿@model AdvertDisplayModel
+@if (Model.Adverts != null)
+{
+    <div id="page1" class="swiper-banner">
+        <div class="swiper-wrapper">
+            @foreach (var advert in Model.Adverts)
+            {
+                if (!advert.IsNormal())
+                {
+                    continue;
+                }
+                var brank = "";
+                if (!string.IsNullOrEmpty(advert.LinkUrl) && advert.LinkUrl != "javascript:;" && advert.Target == Target.Blank)
+                {
+                    brank = "target=_brank";
+                }
+                <div class="swiper-slide">
+                    <a href="@advert.LinkUrl.ToUrl()" @(brank)>
+                        <img src="@Url.ThumbUrl(advert.ImgUrl,"1920x750")" alt="" />
+                    </a>
+                </div>
+            } 
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="pagination-a"></div>
+    </div>
+}

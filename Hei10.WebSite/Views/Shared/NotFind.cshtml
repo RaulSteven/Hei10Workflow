@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Cur = "true";
+}
+@section footJs
+{
+    <script type="text/javascript">
+        function countDown(secs, surl) {
+            //alert(surl);
+            var jumpTo = document.getElementById('jumpTo');
+            jumpTo.innerHTML = secs;
+            if (--secs > 0) {
+                setTimeout("countDown(" + secs + ",'" + surl + "')", 1000);
+            } else {
+                location.href = surl;
+            }
+        }
+        countDown(5, '@Url.Home()');
+        $(function () {
+            $('.nav-ul-li .current').removeClass('current'); 
+        });
+    </script>
+}
+<div class="box-a">
+    <h1><strong>404</strong> Not Found</h1>
+    <p>非常尴尬的用英文通知您，中文意思就是：页面出错了！</p>
+    <p><span id="jumpTo">5</span>秒后自动返回首页</p>
+</div>

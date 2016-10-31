@@ -1,0 +1,47 @@
+﻿<script type="text/javascript">
+    var flowName = getFlowName();
+    if (!window.isCreateFlow && getFlowName) {
+        $('#setFlow #base_Name').val(flowName);
+        $('#setFlow #tableSource').val(getTableSource());
+        $('#setFlow #base_Remark').val(getRemark());
+    }
+
+    var onSaveData = function () {
+        setFlowName($('#setFlow #base_Name').val());
+        setTableSource($('#setFlow #tableSource').val());
+        setRemark($('#setFlow #base_Remark').val());
+
+        if (window.isCreateFlow) {
+            setFlowId(0);
+            myDiagram.model = go.Model.fromJson({});
+        }
+    };
+</script>
+<div class="bjui-pageContent" id="setFlow">
+    <form  data-toggle="validate">
+        <div style="margin:15px auto 0; width:100%;height: 99%;">
+            <table class="table-bordered table-condensed table-hover" style="width: 100%;">
+                <tr>
+                    <th align="right">流程名称：</th>
+                    <td><input type="text" id="base_Name" name="base_Name" class="input-nm" style="width:75%" data-rule="required;" /></td>
+                </tr>
+                <tr>
+                    <th align="right">数据源：</th>
+                    <td>
+                        @Html.DropDownList("tableSource", TableSource.Adverts.GetSListInt(), "请选择", new { @class = "input-nm", @style="height: 25px;", @data_rule = "required;", @placeholder = "数据源" })
+                    </td>
+                </tr>
+                <tr>
+                    <th align="right">备注：</th>
+                    <td><textarea rows="4" cols="50" id="base_Remark" name="base_Remark"></textarea></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="save" onclick="onSaveData()">保存</button></li>
+    </ul>
+</div>
+

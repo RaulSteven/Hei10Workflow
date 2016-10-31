@@ -1,0 +1,315 @@
+﻿@model string
+@{
+    SysUser user = ViewBag.CurrUser;
+}
+<script type="text/javascript">
+    var saveCallBack = function (result) {
+        var zTree = $.fn.zTree.getZTreeObj("frontMenuZtree");
+        if (result.Error) {
+            for (var i = 0; i < result.Error.length; i++) {
+                $('#' + result.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + result.Error[i].Value + '</span></span></span>').show();
+            }
+            return;
+        }
+        if (add) {
+            //新增
+            var parentNode = zTree.getNodeByParam("id", result.Data.Pid, null);
+            var newNode = {
+                "id": result.Data.Id,
+                "pid": result.Data.Pid,
+                "name": result.Data.Name,
+                "remark": result.Data.Remark,
+                "sort": result.Data.Sort,
+                "children": null,
+                "url": result.Data.Url,
+                "iconSmall": result.Data.IconSmall,
+                "iconSmallPath": result.Data.IconSmallPath,
+                "iconMiddle": result.Data.IconMiddle,
+                "iconMiddlePath": result.Data.IconMiddlePath,
+                "iconLarge": result.Data.IconLarge,
+                "iconLargePath": result.Data.IconLargePath
+            };
+            var addNodeArr;
+            if (parentNode) {
+                //增加子菜单
+                addNodeArr = zTree.addNodes(parentNode, result.Data.IndexOfParent, newNode);
+            } else {
+                //增加一级菜单
+                addNodeArr = zTree.addNodes(null, result.Data.IndexOfParent, newNode);
+            }
+            doEdit(newNode);
+            zTree.selectNode(addNodeArr[0]);
+        }
+        else {
+            //编辑
+            var currNode = zTree.getSelectedNodes()[0];
+            currNode.name = result.Data.Name;
+            currNode.remark = result.Data.Remark;
+            currNode.sort = result.Data.Sort;
+            currNode.url = result.Data.Url;
+            currNode.iconSmall = result.Data.IconSmall;
+            currNode.iconSmallPath = result.Data.IconSmallPath;
+            currNode.iconMiddle = result.Data.IconMiddle;
+            currNode.iconMiddlePath = result.Data.IconMiddlePath;
+            currNode.iconLarge = result.Data.IconLarge;
+            currNode.iconLargePath = result.Data.IconLargePath;
+            zTree.updateNode(currNode);
+
+            var brotherNodes = zTree.getNodesByParam("pid", result.Data.Pid, currNode.getParentNode());
+            var lastNode;
+            var hasMove = false;
+            for (var i = 0; i < brotherNodes.length; i++) {
+                var lastNode = brotherNodes[i];
+                if (lastNode.id == currNode.id) {
+                    continue;
+                }
+                if (lastNode.sort > currNode.sort
+                    || (lastNode.sort == currNode.sort
+                        && lastNode.id > currNode.id)) {
+                    zTree.moveNode(lastNode, currNode, "prev");
+                    hasMove = true;
+                    break;
+                }
+            }
+            if (!hasMove) {
+                zTree.moveNode(lastNode, currNode, "next");
+            }
+        }
+        $.CurrentNavtab.alertmsg('ok', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+    };
+
+    var add = true;
+    var MenuClick = function (event, treeId, treeNode) {
+        event.preventDefault();
+        doEdit(treeNode);
+
+        add = false;
+    };
+
+    var doEdit = function (treeNode) {
+        $.CurrentNavtab.find('#hdId').val(treeNode.id);
+        $.CurrentNavtab.find('#hdPid').val(treeNode.pid);
+        $.CurrentNavtab.find('#txtName').val(treeNode.name);
+        $.CurrentNavtab.find('#txtSort').val(treeNode.sort);
+        $.CurrentNavtab.find('#txtRemark').val(treeNode.remark);
+        $.CurrentNavtab.find('#txtUrl').val(treeNode.url);
+        $.CurrentNavtab.find('#hdIconSmall').val(treeNode.iconSmall);
+        setImgSrc('imgSmall', treeNode.iconSmallPath);
+        $.CurrentNavtab.find('#hdIconMiddle').val(treeNode.iconMiddle);
+        setImgSrc('imgMiddle', treeNode.iconMiddlePath);
+        $.CurrentNavtab.find('#hdIconLarge').val(treeNode.iconLarge);
+        setImgSrc('imgLarge', treeNode.iconLargePath);
+
+        add = false;
+    };
+
+    var setImgSrc = function (imgId, path) {
+        if (!path) {
+            path = defaultImgSrc;
+        } else {
+            path = '/file/' + path;
+        }
+        $.CurrentNavtab.find('#' + imgId).attr('src', path);
+    };
+
+    var addFrontMenu = function () {
+        $.CurrentNavtab.find('#hdPid').val('0');
+        clearForm();
+    };
+
+    var addFrontMenuChild = function () {
+        var zTree = $.fn.zTree.getZTreeObj("frontMenuZtree");
+        var currNode = zTree.getSelectedNodes()[0];
+        if (!currNode) {
+            $.CurrentNavtab.alertmsg('error', '请选择一个菜单！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        if (currNode.getParentNode()) {
+            $.CurrentNavtab.alertmsg('error', '只能添加2级菜单！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        $.CurrentNavtab.find('#hdPid').val(currNode.id);
+        clearForm(); 
+    };
+
+    var clearForm = function () {
+        $.CurrentNavtab.find('#hdId').val('0');
+        $.CurrentNavtab.find('#txtName').val('');
+        $.CurrentNavtab.find('#txtSort').val('');
+        $.CurrentNavtab.find('#txtRemark').val('');
+        $.CurrentNavtab.find('#txtUrl').val('');
+        $.CurrentNavtab.find('#hdIconSmall').val('');
+        setImgSrc('imgSmall', '');
+        $.CurrentNavtab.find('#hdIconMiddle').val('');
+        setImgSrc('imgMiddle', '');
+        $.CurrentNavtab.find('#hdIconLarge').val('');
+        setImgSrc('imgLarge', '');
+        add = true;
+    };
+
+    $.CurrentNavtab.find('#btnDelete').click(function () {
+        var zTree = $.fn.zTree.getZTreeObj("frontMenuZtree");
+        var currNode = zTree.getSelectedNodes()[0];
+        if (!currNode) {
+            $.CurrentNavtab.alertmsg('error', '请选择要删除的节点！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        $.CurrentNavtab.alertmsg('confirm', '确定要删除 ' + currNode.name + ' 吗？',
+            {
+                displayMode: 'slide',
+                displayPosition: 'topcenter',
+                okCall: function () {
+                    $.post('@Url.Action("Delete")', { id: currNode.id }, function (result) {
+                        if (result.statusCode == 200) {
+                            zTree.removeNode(currNode);
+                            $.CurrentNavtab.alertmsg('ok', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                            clearForm();
+                            return;
+                        }
+                        $.CurrentNavtab.alertmsg('error', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                    });
+                }
+            });
+    });
+
+    var defaultImgSrc = '/Res/b-jui/images/transparent.gif';
+    function doc_upload_success(file, data) {
+        var json = $.parseJSON(data);
+        $(this).bjuiajax('ajaxDone', json);
+        if (json[BJUI.keys.statusCode] == BJUI.statusCode.ok) {
+            switch (json.type) {
+                case 0:
+                    $.CurrentNavtab.find('#hdIconSmall').val(json.filePath);
+                    $.CurrentNavtab.find('#imgSmall').attr('src', json.imgPath);
+                    break;
+                case 1:
+                    $.CurrentNavtab.find('#hdIconMiddle').val(json.filePath);
+                    $.CurrentNavtab.find('#imgMiddle').attr('src', json.imgPath);
+                    break;
+                case 2:
+                    $.CurrentNavtab.find('#hdIconLarge').val(json.filePath);
+                    $.CurrentNavtab.find('#imgLarge').attr('src', json.imgPath);
+                    break;
+                default:
+
+            }
+        }
+    };
+</script>
+<div class="bjui-pageHeader">
+    <!-- 顶部模块[如：功能按钮、搜索面板] -->
+    @if (user.HasButton(SysButton.Edit))
+    {
+        <div class="btn-group" role="group">
+            <button type="button" id="btnAdd" onclick="addFrontMenu();" class="btn btn-blue" data-icon="plus">添加根菜单</button>
+            <button type="button" id="btnAddChild" onclick="addFrontMenuChild();" class="btn btn-green" data-icon="plus">添加子菜单</button>
+        </div>
+    }
+    @if (user.HasButton(SysButton.Delete))
+    {
+        <div class="btn-group" role="group">
+            <button type="button" id="btnDelete" class="btn btn-red" data-icon="remove">删除</button>
+        </div>
+    }
+</div>
+<div class="bjui-pageContent">
+    <div style="float:left; width:200px;">
+        <!-- 内容区 -->
+        <ul id="frontMenuZtree" class="ztree" data-toggle="ztree"
+            data-options="{expandAll: true,
+            nodes:@Model,
+            onClick: 'MenuClick'}"></ul>
+    </div>
+    <div style="margin-left:210px; height:99.9%; overflow:hidden;">
+        <fieldset>
+            <legend>菜单信息编辑</legend>
+            <form action="@Url.Action("Save")" data-toggle="validate" data-alertmsg="false" data-callback="saveCallBack">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="hdId" value="0" />
+                <input type="hidden" name="Pid" id="hdPid" value="0" />
+                <table class="table table-condensed table-hover" width="100%">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label class="control-label x85">名称：</label>
+                                <input type="text" id="txtName" name="Name" data-rule="required;length[2~20]">
+                            </td>
+                            <td>
+                                <label class="control-label x85">排序：</label>
+                                <input type="text" id="txtSort" name="Sort" data-rule="required;integer;range[1~]" placeholder="排序值">
+                            </td>
+                            <td>
+                                <label class="control-label x95">Url：</label>
+                                <input type="text" id="txtUrl" name="Url" data-rule="length[~250]">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="control-label x85">小图标：</label>
+                                <div style="display: inline-block; vertical-align: middle;">
+                                    <div id="iconSmallUpload" data-toggle="upload" data-uploader="@Url.Action("BatchUpload", "Attachment", new {src = TableSource.Articles,type=0})"
+                                         data-file-size-limit="1024000000"
+                                         data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                         data-multi="false"
+                                         data-on-upload-success="doc_upload_success"
+                                         data-icon="cloud-upload"></div>
+                                    <input type="hidden" id="hdIconSmall" name="IconSmall" />
+                                </div>
+                                <br />
+                                <img id="imgSmall" src="/Res/b-jui/images/transparent.gif" alt="" width="100" height="100" style="margin-top: 10px;" />
+                            </td>
+                            <td>
+                                <label class="control-label x85">中图标：</label>
+                                <div style="display: inline-block; vertical-align: middle;">
+                                    <div id="iconMiddleUpload" data-toggle="upload" data-uploader="@Url.Action("BatchUpload", "Attachment", new {src = TableSource.Articles,type=1})"
+                                         data-file-size-limit="1024000000"
+                                         data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                         data-multi="false"
+                                         data-on-upload-success="doc_upload_success"
+                                         data-icon="cloud-upload"></div>
+                                    <input type="hidden" id="hdIconMiddle" name="IconMiddle" />
+                                </div>
+                                <br />
+                                <img id="imgMiddle" src="/Res/b-jui/images/transparent.gif" alt="" width="100" height="100" style="margin-top: 10px;" />
+                            </td>
+                            <td>
+                                <label class="control-label x85">大图标：</label>
+                                <div style="display: inline-block; vertical-align: middle;">
+                                    <div id="iconLargeUpload" data-toggle="upload" data-uploader="@Url.Action("BatchUpload", "Attachment", new {src = TableSource.Articles,type=2})"
+                                         data-file-size-limit="1024000000"
+                                         data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                         data-multi="false"
+                                         data-on-upload-success="doc_upload_success"
+                                         data-icon="cloud-upload"></div>
+                                    <input type="hidden" id="hdIconLarge" name="IconLarge" />
+                                </div>
+                                <br />
+                                <img id="imgLarge" src="/Res/b-jui/images/transparent.gif" alt="" width="100" height="100" style="margin-top: 10px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <label class="control-label x85">备注信息：</label>
+                                <textarea cols="30" id="txtRemark" name="Remark" class="form-control" data-rule="length[~250]" style="width: 500px; margin: 0px; height: 46px;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                @if (user.HasButton(SysButton.Edit))
+                                {
+                                    <p class="text-center"><button type="submit" class="btn-default">提 交</button></p>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </fieldset>
+    </div>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn btn-close" data-icon="close">关闭</button></li>
+    </ul>
+</div>
+

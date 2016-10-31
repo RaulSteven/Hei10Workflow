@@ -1,0 +1,80 @@
+﻿@model WebsiteSettingsModel
+<script>
+
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('refresh');
+        }
+    };
+</script>
+<div class="bjui-pageContent">
+    <form action="@Url.Action("WebSiteSettings")" id="WebSiteSettings" data-callback="button_callback" data-toggle="validate" data-alertmsg="false">
+        @Html.AntiForgeryToken()
+        <table class="table table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WebSiteName, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.WebSiteName, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.WebSiteName)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.WebSiteUrl, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.WebSiteUrl, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.WebSiteCopyRight, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.WebSiteCopyRight, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required;length[~200]" } })
+                        @Html.ValidationMessageFor(m => m.WebSiteName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WebSiteICP, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.WebSiteICP, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.WebSiteICP)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.CompanyName, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.CompanyName, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required;length[~50]" } })
+                        @Html.ValidationMessageFor(m => m.CompanyName)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.CompanyAddr, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.CompanyAddr, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.CompanyAddr)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.CompanyTel, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.CompanyTel, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.CompanyTel)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.SitemapPath, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.SitemapPath, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.SitemapPath)
+                    </td>
+                    <td>
+                        @Html.LabelFor(m => m.LogFilePath, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.LogFilePath, new Dictionary<string, object> { { "size", 30 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.LogFilePath)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+        <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+    </ul>
+</div>

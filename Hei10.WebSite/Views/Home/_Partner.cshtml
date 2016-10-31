@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Hei10.Domain.Models.Partner>
+@{
+    var i = 1;
+}
+
+<div class="right">
+    <dl>
+        <dt>友情链接：</dt>
+        <dd>
+            @foreach (var item in Model)
+            {
+                <a href="@item.Url">@item.Name</a>
+                if (i < Model.Count())
+                { 
+                    <span>|</span>
+                }
+                i++;
+            } 
+        </dd>
+    </dl>
+</div>
+

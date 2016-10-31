@@ -1,0 +1,31 @@
+﻿@model List<RecruitJob>
+@{
+    ViewBag.Title = "加入建荣";
+    Layout = "~/Views/Shared/_Layout_Menu.cshtml";
+}
+<div class="box-main">
+    <div class="text-js">
+        我们希望您是一个热爱本行业的积极向上的年轻人。在您专业领域必须有不俗的一面，因为这里人才济济我们生怕您埋没。我们崇尚精英文化，兵不
+        在多而在精。如果您是将才我们更欢迎！公司以年轻人为主，文化时尚开放，敢讲敢言，乐于分享。我们给每个人开放的空间让其发挥最大的创造力。
+
+        优势互动是个大舞台，我们可以让您参与数十个行业中的领导企业与最优秀的人一起共事。我们深知，在知本时代我们所要用的并不是您简单的这双
+        手。我们尊重每一个人，重视每一个人的想法。我们提倡每个人都是自己的管理者，在竭力为公司贡献的时候同时也能把积极的一面影响到周边的其
+        他人。
+
+        最后，希望您的工作是有价值的！Everybody is somebody!
+    </div>
+    <ul class="join-us clearfix">
+        @foreach (var item in Model)
+        {
+            <li>
+                <a href="@Url.Action("Detail",new {item.Id})">
+                    <h1>@item.Name.ToEllipsis(10)</h1><span><img src="/Res/home/images/icon-come.png" alt=""></span>
+                </a>
+            </li>
+        }
+        
+    </ul>
+
+
+</div>
+

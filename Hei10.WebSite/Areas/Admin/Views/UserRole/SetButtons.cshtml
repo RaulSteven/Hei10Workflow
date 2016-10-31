@@ -1,0 +1,57 @@
+﻿@model List<SysUserRole2MenuModel>
+@{
+    var btnList = SysButton.None.GetDescriptDict();
+}
+
+<div class="bjui-pageHeader">
+    <label><input type="checkbox" class="checkboxCtrl" data-group="ids" data-toggle="icheck">全选</label>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>菜单</th>
+                @foreach (var btn in btnList)
+                {
+                    if ((SysButton)btn.Key == SysButton.None)
+                    {
+                        continue;
+                    }
+                    <th>@btn.Value</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+
+                <tr data-id="@item.Id">
+                    <td>@item.MenuName</td>
+                    @foreach (var btn in btnList)
+                    {
+                        if ((SysButton)btn.Key == SysButton.None)
+                        {
+                            continue;
+                        }
+                        <td>
+                            @if (item.Buttons.HasFlag((SysButton)btn.Key))
+                            {
+                                <input type="checkbox" class="checkboxCtrl" name="ids" value="@(item.Id+"_"+btn.Key)" data-toggle="icheck" @(item.SelectedButtons.HasFlag((SysButton)btn.Key) ? "checked=checked" : "") />
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn-close">关闭</button>
+        </li>
+        <li>
+            <a href="@Url.Action("SetButtons",new { roleId=ViewBag.RoleId})" class="btn btn-green" data-idname="btnIds" data-toggle="doajaxchecked" data-group="ids">保存</a>
+        </li>
+    </ul>
+</div>

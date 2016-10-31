@@ -1,0 +1,73 @@
+﻿@model LoginModel
+<script>
+    $(function () {
+        $.CurrentDialog.find('.input-checkbox').click(function () {
+            var $isRem = $.CurrentDialog.find('#IsRemember');
+            if ($(this).hasClass('cur')) {
+                $(this).removeClass('cur');
+                $isRem.val('false');
+            } else {
+                $(this).addClass('cur');
+                $isRem.val('true');
+            }
+        });
+
+        $.CurrentDialog.find('#captcha_img').click(function () {
+            changeCode();
+        });
+    });
+
+    function genTimestamp() {
+        var time = new Date();
+        return time.getTime();
+    };
+    function changeCode() {
+        $.CurrentDialog.find("#captcha_img").attr("src", "@Url.GetVerifyCode()?t=" + genTimestamp());
+    };
+
+    function loginDialog_callback(json) {
+        if (json.statusCode != 200) {
+            if (json.Error) {
+                for (var i = 0; i < json.Error.length; i++) {
+                    $('#' + json.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span>').show();
+                }
+            }
+
+            if (json.message) {
+                $.CurrentDialog.alertmsg('error', json.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+            }
+            return;
+        }
+        $(this)
+        .bjuiajax('ajaxDone', json) // 信息提示
+        .dialog('closeCurrent');
+    };
+</script>
+<div class="bjui-pageContent">
+    <div class="login_box">
+        <div class="login_form">
+            <form action="@Url.Action("LoginDialog")" method="post" data-callback="loginDialog_callback" data-toggle="validate" data-alertmsg="false" >
+                <h1 class="login-title">Login</h1>
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <input placeholder="用户名" id="UserName" name="UserName" value="@Model.UserName" data-rule="required" type="text" class="form-control w-all in" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input placeholder="密码" id="Password" name="Password" data-rule="required" type="password" class="form-control w-all in">
+                </div>
+                <div class="form-group">
+                    <input placeholder="验证码" id="ValidateCode" name="ValidateCode" data-rule="required" type="text" class="form-control w-half in">
+                    <img id="captcha_img" alt="点击更换" title="点击更换" src="@Url.GetVerifyCode()" class="m">
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m=>m.IsRemember)
+                    <span class="input-checkbox  @(Model.IsRemember?"cur":"")">记住登录密码</span>
+                </div>
+                <div class="form-group space">
+                    <button type="submit" value="" class="btn btn-login btn-lg">登录</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

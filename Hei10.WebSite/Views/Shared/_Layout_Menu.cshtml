@@ -1,0 +1,56 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+
+    FrontMenuJsonModel currMenu = ViewBag.CurrMenu;
+    FrontMenuJsonModel currPage = ViewBag.CurrPage;
+    bool hideTitle = ViewBag.HideTitle ?? false;
+    bool hideNavigation = ViewBag.HideNavigation ?? true;
+}
+@section footJs
+{
+    @RenderSection("menuFootJs",false)
+}
+<div class="title-about">
+    <div class="name clearfix">
+        <div class="info"><img src="@Url.FileUrl(currMenu.iconLarge)" alt=""></div>
+    </div>
+</div>
+<div class="box-all">
+    <!--左侧菜单s-->
+    <div class="box-left">
+        <div class="pic-function"><span><img src="@Url.FileUrl(currMenu.iconSmall)" alt=""></span></div>
+        <ul>
+            @if (currMenu.children != null && currMenu.children.Count > 0)
+            {
+                foreach (var page in currMenu.children)
+                {
+                    <li @(currPage.id == page.id ? "class=cur" : "")><a href="@page.url.ToUrl()">@page.name</a></li>
+                }
+            }
+            else
+            {
+                <li class="cur"><a href="@currMenu.url.ToUrl()">@currMenu.name</a></li>
+            }
+        </ul>
+    </div>
+    <!--左侧菜单 end-->
+    <!--右边内容s-->
+    <div class="box-right">
+        @if (hideNavigation)
+        {
+            <div class="title @(hideTitle?"":"line-border")">
+                @if (!hideTitle)
+                {
+                    <h1>@ViewBag.Title</h1>
+                }
+                <ul>
+                    <li class="home"><a href="@currMenu.url.ToUrl()">@currMenu.name</a></li>
+                    <li class="sel"><a href="@currPage.url.ToUrl()">@currPage.name</a></li>
+                </ul>
+            </div>
+        }
+        
+        @RenderBody()
+    </div>
+    <!--右边内容 end-->
+</div>

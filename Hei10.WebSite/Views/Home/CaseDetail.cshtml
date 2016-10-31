@@ -1,0 +1,82 @@
+﻿@model Hei10.Domain.Models.Article
+
+@{
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var picList = (Model.Pic ?? "").Split(',').Where(d => !string.IsNullOrEmpty(d)).ToList();
+    List<ArticleBizModel> random = ViewBag.Random;
+    ViewBag.Cur = "true";
+}
+@section footJs{
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function(e) {
+            var swiper = new Swiper('.swiper-container', {
+                pagination: '.swiper-pagination',
+                nextButton: '.swiper-button-next',
+                prevButton: '.swiper-button-prev',
+                paginationType: 'fraction',
+                paginationFractionRender: function(swiper, currentClassName, totalClassName) {
+                    return '<span class="' + currentClassName + '"></span>' +
+                        '<span class="' + totalClassName + '"></span>';
+                }
+            });
+        });
+
+        $(function() {
+            $('.nav-ul-li .current').removeClass('current');
+            $('.nav-ul-li').find('li').eq(2).addClass('current');
+        });
+    </script>
+}
+ <!--案例详情s-->
+<div class="case-details clearfix">
+    <div class="left">
+
+        <!-- Swiper -->
+        <div class="swiper-container swiper-container-horizontal">
+            <div class="swiper-wrapper">
+                @foreach (var item in picList)
+                {
+                    <div class="swiper-slide"><img src="@Url.ThumbUrl(item, "960x640")" alt=""></div>
+                } 
+            </div> 
+            <div class="title">slideshow</div> 
+            <!--分页-->
+            <div class="turn">
+                <div class="button-prev swiper-button-prev"></div>
+                <div class="button-next swiper-button-next"></div>
+            </div>
+
+        </div> 
+        <!--次数-->
+        <div class="swiper-pagination swiper-pagination-fraction xuhao">
+            <span class="swiper-pagination-current up cur">05</span>
+            <span class="swiper-pagination-total down">08</span>
+        </div> 
+    </div> 
+    <div class="right">
+        <h1>@Model.Title</h1>
+        <div class="text">@Html.Raw(Model.ArticleContent)</div> 
+    </div> 
+</div>
+<!--案例详情e-->
+<!--案例s-->
+<div class="box-case case-detail">
+    <div class="line-bg"></div>
+    <ul class="bg-list clearfix">
+        @foreach (var item in random)
+        {
+            var pic = (item.Article.Pic ?? "").Split(',').FirstOrDefault(d => !string.IsNullOrEmpty(d)) ?? "";
+            <li>
+                <div class="meg">
+                    <a href="@Url.Action("CaseDetail",new { id = item.Article.Id })" title="@item.Article.Title">
+                        <div class="pic"><img src="@Url.ThumbUrl(pic, "455x303")" alt="@item.Article.Title" title="@item.Article.Title"></div>
+                        <div class="text"><span>@item.ArticleClassifyName</span><h1 class="name">@item.Article.Title</h1><span>@item.Article.ArticleDateTime.Year</span></div>
+                        <div class="pic-bg"></div>
+                    </a>
+                </div>
+            </li>
+        } 
+    </ul>
+</div>
+<!--案例 end-->

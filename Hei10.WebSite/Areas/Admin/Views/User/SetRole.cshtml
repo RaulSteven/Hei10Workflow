@@ -1,0 +1,34 @@
+﻿@model SetRoleModel
+
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true" id="selectButtons">
+        <thead>
+            <tr>
+                <th width="30"><input type="checkbox" class="checkboxCtrl" data-group="btnIds" data-toggle="icheck"></th>
+                <th>名称</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model.UserRoleList)
+            {
+                <tr data-id="@role.Id">
+                    <td><input type="checkbox" name="btnIds" value="@role.Id" data-toggle="icheck"
+                               @(Model.SelectedRoleIdList.Any(m=>m==role.Id)?"checked=checked":"") /></td>
+                    <td>@role.Name</td>
+                    <td>@role.Remark</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn-close">关闭</button>
+        </li>
+        <li>
+            <a href="@Url.Action("SetRole",new { userId=Model.UserId})" class="btn btn-green" data-idname="roleIds" data-toggle="doajaxchecked" data-group="btnIds" data-icon="save">保存</a>
+        </li>
+    </ul>
+</div>

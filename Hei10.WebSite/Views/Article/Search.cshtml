@@ -1,0 +1,106 @@
+﻿@using PagedList
+@{
+    ViewBag.Title = "搜索" + ViewBag.KeyWord;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<ArticleClassify> classifyList = ViewBag.ClassifyList;
+    List<ArticleSearchListModel> articleList = ViewBag.ArticleList;
+    IPagedList<Article> articlePage = null;
+    var totalPage = 0;
+    if (articleList != null)
+    {
+        totalPage = articleList.Sum(d => d.PagedList.Count);
+    }
+    string keyWord = ViewBag.KeyWord;
+}
+@section footJs{
+    <script type="text/javascript" language="javascript">
+        $('.get-data-div').click(function() {
+            var ul = $(this).prev();
+            var pageCount = $(this).attr('data-pagecount');
+            var url = $(this).attr('data-url');
+            clickDate(ul, $('.pageList'),pageCount, url);
+        });
+    </script>
+}
+<div class="title-about search-top">
+    <div class="result-main">
+        <div class="search-result">
+            @using (Html.BeginForm("Search", "Article"))
+            {
+                <input type="text" id="keyWord" name="keyWord" value="@(ViewBag.KeyWord )" class="input-text-default w-605">
+                <input type="button" class="search-button ml5 search-article-submit">
+            } 
+        </div> 
+        <div class="result-all">
+            <ul>
+                @if (classifyList != null)
+                {
+                    var classifyFlag = true;
+                    foreach (var item in classifyList)
+                    {
+                        <li @(classifyFlag ? "class=cur" : "")><a href="javascript:;">@item.Name</a></li>
+                        classifyFlag = false;
+                    }
+                } 
+            </ul>
+            <div class="result">Hi，您搜索@(string.IsNullOrEmpty(keyWord) ? "全部": "关键字 “ "+ keyWord.ToEllipsis(60) + " ”")，共找到 @totalPage 个内容。</div>
+        </div>
+    </div>
+</div>
+<div class="box-all content">
+    @if (classifyList != null)
+    {
+        foreach (var item in classifyList)
+        {
+            articlePage = null;
+            if (articleList != null && articleList.Any())
+            {
+                var article = articleList.FirstOrDefault(d => d.ArticleClassifyId == item.Id);
+                if (article != null)
+                {
+                    articlePage = article.PagedList;
+                }
+            }
+            if (item.PartialViewCode == ArticleListType.Text)
+            {
+                <!--新闻内容s-->
+                <div class="item new-info box-com"> 
+                    @if (articlePage != null && articlePage.Any())
+                    {
+                        <ul>@{ Html.RenderPartial("_TextList", articlePage); }</ul>
+                        if (articlePage.PageCount > 1)
+                        {
+                            <div class="more get-data-div" data-pagecount="@(articlePage.PageCount)" data-url="@Html.Raw(Url.Action("SearchByPage", new {keyWord = ViewBag.KeyWord, classifyId = item.Id, ArticleListType.Text}))"><a href="javascript:;">查看更多<img src="/Res/home/images/icon-down.png" alt=""></a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="details-no"><img src="/Res/home/images/icon-tip.png" alt="">暂无内容！</div>
+                    }
+                </div>
+                <!--新闻内容 end-->
+            }
+            else
+            {
+                <!--项目内容s-->
+                <div class="item new-info box-com">
+                    @if (articlePage != null && articlePage.Any())
+                    {
+                        <div class="list-pro">@{Html.RenderPartial("_ImageList", articlePage); }</div>
+                        if (articlePage.PageCount > 1)
+                        {
+                            <div class="more get-data-div"  data-pagecount="@(articlePage.PageCount)"  data-url="@Html.Raw(Url.Action("SearchByPage",new { keyWord= ViewBag.KeyWord, classifyId = item.Id, ArticleListType.Image }))"><a href="javascript:;">查看更多<img src="/Res/home/images/icon-down.png" alt=""></a></div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="details-no"><img src="/Res/home/images/icon-tip.png" alt="">暂无内容！</div>
+                    }  
+                </div>
+                <!--项目内容 end-->
+            }
+        }
+    }
+</div>
+<div class="pageList" style="display: none;"></div>

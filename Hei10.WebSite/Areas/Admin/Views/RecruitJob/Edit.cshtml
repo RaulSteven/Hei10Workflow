@@ -1,0 +1,69 @@
+﻿@using Hei10.Core.Extensions
+@using Hei10.Core.Utilities
+@using Hei10.Domain.Enums
+@using Hei10.Web.Framework.Extensions
+@model RecruitJob
+<script type="text/javascript">
+    var tabId = '@Request["tabId"]';
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+                .bjuiajax('ajaxDone', json) // 信息提示
+                .navtab('closeCurrentTab')
+                .navtab('switchTab', tabId)
+                .navtab('reloadForm',false, tabId);
+        }
+
+    }
+</script>
+@using (Html.BeginForm("Edit", "RecruitJob", FormMethod.Post, new { @data_toggle = "validate", @data_alertmsg = "false", @data_callback = "button_callback" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Partial("_Edit_Hidden_Base")
+    <div class="bjui-pageContent">
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Name, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "input-lg w500", @data_rule = "required;length[~50]" })
+                        @Html.ValidationMessageFor(m => m.Name)
+                        必填，最多50个字符。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkDuty, new { @class = "control-label x85" })
+                        @Html.Raw(Html.TextAreaFor(m => m.WorkDuty, 18, 60, null))
+                        @Html.ValidationMessageFor(m => m.WorkDuty)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Requirement, new { @class = "control-label x85" })
+                        @Html.TextAreaFor(m => m.Requirement, 18, 60, null)
+                        @Html.ValidationMessageFor(m => m.Requirement)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Sort, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.Sort, new { @size = "20", @data_rule = "required;digits;" })
+                        @Html.ValidationMessageFor(m => m.Sort)
+                        必填，数字越小越靠前
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bjui-pageFooter">
+        <ul>
+            <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+            <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+        </ul>
+    </div>
+}

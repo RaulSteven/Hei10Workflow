@@ -1,0 +1,239 @@
+﻿@model string
+@{
+    SysUser user = ViewBag.CurrUser;
+}
+<script type="text/javascript">
+    var saveCallBack = function (result) {
+        var zTree = $.fn.zTree.getZTreeObj("menuZtree");
+        if (result.Error) {
+            for (var i = 0; i < result.Error.length; i++) {
+                $('#' + result.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + result.Error[i].Value + '</span></span></span>').show();
+            }
+            return;
+        }
+        if (add) {
+            //新增
+            var parentNode = zTree.getNodeByParam("id", result.Data.Pid, null);
+            var newNode = {
+                "id": result.Data.Id,
+                "pid": result.Data.Pid,
+                "name": result.Data.Name,
+                "remark": result.Data.Remark,
+                "sort": result.Data.Sort,
+                "children": null,
+                "url": result.Data.Url,
+                "faicon": result.Data.Icon,
+                "source": result.Data.Source,
+                "buttons": result.Data.Buttons,
+                "buttonNames":result.Data.ButtonNames
+            };
+            var addNodeArr;
+            if (parentNode) {
+                //增加子菜单
+                addNodeArr = zTree.addNodes(parentNode,result.Data.IndexOfParent, newNode);
+            } else {
+                //增加一级菜单
+                addNodeArr = zTree.addNodes(null, result.Data.IndexOfParent, newNode);
+            }
+            doEdit(newNode);
+            zTree.selectNode(addNodeArr[0]);
+        }
+        else {
+            //编辑
+            var currNode = zTree.getSelectedNodes()[0];
+            currNode.name = result.Data.Name;
+            currNode.remark = result.Data.Remark;
+            currNode.sort = result.Data.Sort;
+            currNode.url = result.Data.Url;
+            currNode.faicon = result.Data.Icon;
+            currNode.source = result.Data.Source;
+            currNode.buttons = result.Data.Buttons;
+            currNode.buttonNames = result.Data.ButtonNames;
+            zTree.updateNode(currNode);
+
+            var brotherNodes = zTree.getNodesByParam("pid", result.Data.Pid, currNode.getParentNode());
+            var lastNode;
+            var hasMove = false;
+            for (var i = 0; i < brotherNodes.length; i++) {
+                var lastNode = brotherNodes[i];
+                if (lastNode.id == currNode.id) {
+                    continue;
+                }
+                if (lastNode.sort > currNode.sort
+                    || (lastNode.sort == currNode.sort
+                        && lastNode.id > currNode.id)) {
+                    zTree.moveNode(lastNode, currNode, "prev");
+                    hasMove = true;
+                    break;
+                }
+            }
+            if (!hasMove) {
+                zTree.moveNode(lastNode, currNode, "next");
+            }
+        }
+        $.CurrentNavtab.alertmsg('ok', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+    };
+
+    var add = true;
+    var MenuClick = function (event, treeId, treeNode) {
+        event.preventDefault();
+        doEdit(treeNode);
+        saveBtnDisplay('@user.HasButton(SysButton.Edit)');
+    };
+
+    var saveBtnDisplay = function (hasPerm) {
+        if (hasPerm == 'True') {
+            $.CurrentNavtab.find('#sysMenuSave').removeClass('hidden');
+        } else {
+            $.CurrentNavtab.find('#sysMenuSave').addClass('hidden');
+        }
+    };
+
+    var doEdit = function (treeNode) {
+        $.CurrentNavtab.find('#hdId').val(treeNode.id);
+        $.CurrentNavtab.find('#hdPid').val(treeNode.pid);
+        $.CurrentNavtab.find('#txtName').val(treeNode.name);
+        $.CurrentNavtab.find('#txtSort').val(treeNode.sort);
+        $.CurrentNavtab.find('#txtRemark').val(treeNode.remark);
+        $.CurrentNavtab.find('#txtUrl').val(treeNode.url);
+        $.CurrentNavtab.find('#txtIcon').val(treeNode.faicon);
+        $.CurrentNavtab.find('#txtSource').val(treeNode.source);
+        $.CurrentNavtab.find('#txtButtons').val(treeNode.buttons);
+        $.CurrentNavtab.find('#txtButtonNames').val(treeNode.buttonNames);
+
+        add = false;
+    };
+
+    $.CurrentNavtab.find('#btnAddChild').click(function () {
+        var zTree = $.fn.zTree.getZTreeObj("menuZtree");
+        var currNode = zTree.getSelectedNodes()[0];
+        if (!currNode) {
+            $.CurrentNavtab.alertmsg('error', '请选择一个菜单！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        $.CurrentNavtab.find('#hdPid').val(currNode.id);
+        clearForm();
+        add = true;
+        saveBtnDisplay('@user.HasButton(SysButton.Add)');
+    });
+
+    $.CurrentNavtab.find('#btnAdd').click(function () {
+        $.CurrentNavtab.find('#hdPid').val('0');
+        clearForm();
+        add = true;
+        saveBtnDisplay('@user.HasButton(SysButton.Add)');
+    });
+
+    var clearForm = function () {
+        $.CurrentNavtab.find('#hdId').val('0');
+        $.CurrentNavtab.find('#txtName').val('');
+        $.CurrentNavtab.find('#txtSort').val('');
+        $.CurrentNavtab.find('#txtRemark').val('');
+        $.CurrentNavtab.find('#txtUrl').val('');
+        $.CurrentNavtab.find('#txtIcon').val('');
+        $.CurrentNavtab.find('#txtSource').val('');
+        $.CurrentNavtab.find('#txtButtons').val('0');
+        $.CurrentNavtab.find('#txtButtonNames').val('');
+    };
+
+    $.CurrentNavtab.find('#btnDelete').click(function () {
+        var zTree = $.fn.zTree.getZTreeObj("menuZtree");
+        var currNode = zTree.getSelectedNodes()[0];
+        if (!currNode) {
+            $.CurrentNavtab.alertmsg('error', '请选择要删除的节点！', { displayMode: 'slide', displayPosition: 'topcenter' });
+            return;
+        }
+        $.CurrentNavtab.alertmsg('confirm', '确定要删除 ' + currNode.name + ' 吗？',
+            {
+                displayMode: 'slide',
+                displayPosition: 'topcenter',
+                okCall: function () {
+                    $.post('@Url.Action("Delete")', { id: currNode.id }, function (result) {
+                        if (result.statusCode == 200) {
+                            zTree.removeNode(currNode);
+                            $.CurrentNavtab.alertmsg('ok', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                            $.CurrentNavtab.find('#hdPid').val('0');
+                            clearForm();
+                            return;
+                        }
+                        $.CurrentNavtab.alertmsg('error', result.message, { displayMode: 'slide', displayPosition: 'topcenter' });
+                    });
+                }
+            });
+    });
+
+
+</script>
+<div class="bjui-pageHeader">
+    <!-- 顶部模块[如：功能按钮、搜索面板] -->
+    @if (user.HasButton(SysButton.Add))
+    {
+        <div class="btn-group" role="group">
+            <button type="button" id="btnAdd" class="btn btn-blue" data-icon="plus">添加根菜单</button>
+            <button type="button" id="btnAddChild" class="btn btn-green" data-icon="plus">添加子菜单</button>
+        </div>
+    }
+    @if (user.HasButton(SysButton.Delete))
+    {
+        <div class="btn-group" role="group">
+            <button type="button" id="btnDelete" class="btn btn-red" data-icon="remove">删除</button>
+        </div>
+    }
+</div>
+<div class="bjui-pageContent">
+    <div style="float:left; width:200px;">
+        <!-- 内容区 -->
+        <ul id="menuZtree" class="ztree" data-toggle="ztree" 
+            data-options="{expandAll: true,
+            nodes:@Model,
+            onClick: 'MenuClick'}">
+        </ul>
+    </div>
+    <div style="margin-left:210px; height:99.9%; overflow:hidden;">
+        <fieldset>
+            <legend>菜单信息编辑</legend>
+            <form action="@Url.Action("Save")" data-toggle="validate" data-alertmsg="false" data-callback="saveCallBack">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="hdId" value="0" />
+                <input type="hidden" name="Pid" id="hdPid" value="0" />
+                <p>
+                    <label class="x85">名称：</label>
+                    <input type="text" id="txtName" name="Name" data-rule="required;length[2~50]" >
+                </p>
+                <p>
+                    <label class="x85">排序：</label>
+                    <input type="text" id="txtSort" name="Sort" data-rule="required;integer;range[1~]" placeholder="排序值">
+                </p>
+                <p>
+                    <label class="x85">Url：</label>
+                    <input type="text" size="30" id="txtUrl" name="Url" data-rule="length[~250]" data-tip="请输入小写链接">
+                </p>
+                <p>
+                    <label class="x85">Icon：</label>
+                    <input type="text" id="txtIcon" name="Icon" data-rule="length[~20]"><a href="@Url.Action("SelectIcon","Common")" data-toggle="lookupbtn">选择Icon</a>
+                </p>
+                <p>
+                    <label class="x85">按钮：</label>
+                    <input type="hidden" id="txtButtons" name="Buttons" />
+                    <input type="text" id="txtButtonNames" name="ButtonNames"  readonly="readonly"  />
+                    <a href="@Url.Action("SelectButtons")" data-toggle="lookupbtn">选择按钮</a>
+                </p>
+                <p>
+                    <label class="x85">Source：</label>
+                    <input type="text" id="txtSource" name="Source" data-rule="length[~20]">
+                </p>
+                <p>
+                    <label class="x85">备注信息：</label>
+                    <textarea cols="30" id="txtRemark" name="Remark" class="form-control" data-rule="length[~250]" style="width: 500px; margin: 0px; height: 46px;"></textarea>
+                </p>
+                <p class="text-center  @(user.HasButton(SysButton.Add)?"":"hidden")" id="sysMenuSave"><button type="submit" class="btn-default">提 交</button></p>
+            </form>
+        </fieldset>
+    </div>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn btn-close" data-icon="close">关闭</button></li>
+    </ul>
+</div>
+

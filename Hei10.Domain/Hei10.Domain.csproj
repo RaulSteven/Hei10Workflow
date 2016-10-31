@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E7F62DEF-7927-4935-9580-88E2ABC4D03D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Hei10.Domain</RootNamespace>
+    <AssemblyName>Hei10.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=5.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.5.1.1\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.5840.25917, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entityframework\DbFactory.cs" />
+    <Compile Include="Entityframework\IDbFactory.cs" />
+    <Compile Include="Entityframework\Hei10Context.cs" />
+    <Compile Include="Entityframework\ModelConfigurations\WfProcessInstanceConfiguration.cs" />
+    <Compile Include="Entityframework\ModelConfigurations\WfActivityInstanceConfiguration.cs" />
+    <Compile Include="Enums\AdPosKey.cs" />
+    <Compile Include="Enums\AdvertStatus.cs" />
+    <Compile Include="Enums\AdvertType.cs" />
+    <Compile Include="Enums\ArticleType.cs" />
+    <Compile Include="Enums\CommonStatus.cs" />
+    <Compile Include="Enums\ConstantType.cs" />
+    <Compile Include="Enums\ConsultType.cs" />
+    <Compile Include="Enums\FilterCurrent.cs" />
+    <Compile Include="Enums\FilterGroupOp.cs" />
+    <Compile Include="Enums\FilterRuleOp.cs" />
+    <Compile Include="Enums\WfActivityButton.cs" />
+    <Compile Include="Enums\Gender.cs" />
+    <Compile Include="Enums\OperationType.cs" />
+    <Compile Include="Enums\SigninStatus.cs" />
+    <Compile Include="Enums\SysButton.cs" />
+    <Compile Include="Enums\TableSource.cs" />
+    <Compile Include="Enums\Target.cs" />
+    <Compile Include="Enums\WfActivityBackType.cs" />
+    <Compile Include="Enums\WfActivityState.cs" />
+    <Compile Include="Enums\WfActivityDealType.cs" />
+    <Compile Include="Enums\WfActivityType.cs" />
+    <Compile Include="Enums\WfProcessState.cs" />
+    <Compile Include="Infrastructure\AggregateRoot.cs" />
+    <Compile Include="Infrastructure\Entity.cs" />
+    <Compile Include="Infrastructure\FilterTranslator.cs" />
+    <Compile Include="Infrastructure\IAggregateRoot.cs" />
+    <Compile Include="Infrastructure\IEntity.cs" />
+    <Compile Include="Infrastructure\IJRUser.cs" />
+    <Compile Include="Infrastructure\IRepository.cs" />
+    <Compile Include="Infrastructure\JRUserEmpty.cs" />
+    <Compile Include="Infrastructure\Repository.cs" />
+    <Compile Include="Migrations\201610310642539_StevenInitDb1031.cs" />
+    <Compile Include="Migrations\201610310642539_StevenInitDb1031.Designer.cs">
+      <DependentUpon>201610310642539_StevenInitDb1031.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="ModelMethods\Advert.cs" />
+    <Compile Include="ModelMethods\Attachment.cs" />
+    <Compile Include="ModelMethods\FrontMenu.cs" />
+    <Compile Include="ModelMethods\SysApartment.cs" />
+    <Compile Include="ModelMethods\SysMenu.cs" />
+    <Compile Include="ModelMethods\Users.cs" />
+    <Compile Include="ModelMethods\Workflow\WfApplyBase.cs" />
+    <Compile Include="ModelMethods\Workflow\WfProcess.cs" />
+    <Compile Include="ModelMethods\Workflow\WfProcessInstance.cs" />
+    <Compile Include="ModelMethods\Workflow\WfProcessModel.cs" />
+    <Compile Include="Models\AdPosition.cs" />
+    <Compile Include="Models\Advert.cs" />
+    <Compile Include="Models\Article.cs" />
+    <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\ArticleClassify.cs" />
+    <Compile Include="Models\Consult.cs" />
+    <Compile Include="Models\ConsultClassify.cs" />
+    <Compile Include="Models\FrontMenu.cs" />
+    <Compile Include="Models\LeaveInfo.cs" />
+    <Compile Include="Models\MeetingRoomInfo.cs" />
+    <Compile Include="Models\Partner.cs" />
+    <Compile Include="Models\RecruitJob.cs" />
+    <Compile Include="Models\PropertyModel.cs" />
+    <Compile Include="Models\SealInfo.cs" />
+    <Compile Include="Models\SysApartment.cs" />
+    <Compile Include="Models\SysConfig.cs" />
+    <Compile Include="Models\SysMenu.cs" />
+    <Compile Include="Models\SysOperationLog.cs" />
+    <Compile Include="Models\User2Apartment.cs" />
+    <Compile Include="Models\User2Role.cs" />
+    <Compile Include="Models\UserRole.cs" />
+    <Compile Include="Models\UserRole2Apartment.cs" />
+    <Compile Include="Models\UserRole2Filter.cs" />
+    <Compile Include="Models\UserRole2Menu.cs" />
+    <Compile Include="Models\Users.cs" />
+    <Compile Include="ModelMethods\Workflow\WfActivity.cs" />
+    <Compile Include="Models\Workflow\WfActivityInstance.cs" />
+    <Compile Include="Models\Workflow\WfProcess.cs" />
+    <Compile Include="Models\Workflow\WfProcessInstance.cs" />
+    <Compile Include="ModelMethods\Workflow\WfTransition.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IAdPositionRepository.cs" />
+    <Compile Include="Repositories\IAdvertRepository.cs" />
+    <Compile Include="Repositories\IArticleRepository.cs" />
+    <Compile Include="Repositories\IArticleClassifyRepository.cs" />
+    <Compile Include="Repositories\IAttachmentRepository.cs" />
+    <Compile Include="Repositories\IConsultClassifyRepository.cs" />
+    <Compile Include="Repositories\IConsultRepository.cs" />
+    <Compile Include="Repositories\IFrontMenuRepository.cs" />
+    <Compile Include="Repositories\ILeaveInfoRepository.cs" />
+    <Compile Include="Repositories\IMeetingRoomInfoRepository.cs" />
+    <Compile Include="Repositories\IPartnerRepository.cs" />
+    <Compile Include="Repositories\IRecruitJobRepository.cs" />
+    <Compile Include="Repositories\ISealInfoRepository.cs" />
+    <Compile Include="Repositories\ISysConfigRepository.cs" />
+    <Compile Include="Repositories\ISysApartmentRepository.cs" />
+    <Compile Include="Repositories\ISysMenuRepository.cs" />
+    <Compile Include="Repositories\ISysOperationLogRepository.cs" />
+    <Compile Include="Repositories\IUser2ApartmentRepository.cs" />
+    <Compile Include="Repositories\IUserRole2FilterRepository.cs" />
+    <Compile Include="Repositories\IUserRole2MenuRepository.cs" />
+    <Compile Include="Repositories\IUser2RoleRepository.cs" />
+    <Compile Include="Repositories\IUserRole2ApartmentRepository.cs" />
+    <Compile Include="Repositories\IUserRoleRepository.cs" />
+    <Compile Include="Repositories\IUsersRepository.cs" />
+    <Compile Include="Repositories\IWfActivityInstanceRepository.cs" />
+    <Compile Include="Repositories\IWfProcessInstanceRepository.cs" />
+    <Compile Include="Repositories\IWfProcessRepository.cs" />
+    <Compile Include="Services\IAttachmentSvc.cs" />
+    <Compile Include="Services\IFormsAuthenticationSvc.cs" />
+    <Compile Include="Services\ISysApartmenSvc.cs" />
+    <Compile Include="Services\ISysMenuSvc.cs" />
+    <Compile Include="Services\IUserRoleSvc.cs" />
+    <Compile Include="Services\IWorkflowSvc.cs" />
+    <Compile Include="ViewModels\AdvertBizModel.cs" />
+    <Compile Include="ViewModels\ArticleBizModel.cs" />
+    <Compile Include="ViewModels\ArticleClassifyBizModel.cs" />
+    <Compile Include="ViewModels\ConsultBizModel.cs" />
+    <Compile Include="ViewModels\DropdownItemModel.cs" />
+    <Compile Include="ViewModels\FilterGroup.cs" />
+    <Compile Include="ViewModels\FilterGroupModel.cs" />
+    <Compile Include="ViewModels\FrontMenuJsonModel.cs" />
+    <Compile Include="ViewModels\FrontMenuModel.cs" />
+    <Compile Include="ViewModels\JsonModel.cs" />
+    <Compile Include="ViewModels\LoginResult.cs" />
+    <Compile Include="ViewModels\SysApartJsonModel.cs" />
+    <Compile Include="ViewModels\SysApartModel.cs" />
+    <Compile Include="ViewModels\SysMenuJsonModel.cs" />
+    <Compile Include="ViewModels\SysMenuModel.cs" />
+    <Compile Include="ViewModels\SysUser.cs" />
+    <Compile Include="ViewModels\SysUserModel.cs" />
+    <Compile Include="ViewModels\SysUserRole2MenuModel.cs" />
+    <Compile Include="ViewModels\UserMenuModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hei10.Core\Hei10.Core.csproj">
+      <Project>{263f36c1-79e8-46e6-a34b-e9af95d8eddb}</Project>
+      <Name>Hei10.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Migrations\说明.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201610310642539_StevenInitDb1031.resx">
+      <DependentUpon>201610310642539_StevenInitDb1031.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

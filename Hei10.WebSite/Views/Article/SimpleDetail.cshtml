@@ -1,0 +1,12 @@
+﻿@model JR.Domain.Models.Article
+@{ 
+    Layout = "~/Views/Shared/_Layout_Menu.cshtml";
+    ViewBag.HideNavigation = false;
+    ViewBag.Title = Model.Title;
+}
+<div class="new-info">
+    <h1>@Model.Title</h1>
+    <div class="info">
+        @Html.Raw(Model.ArticleContent)
+    </div>
+</div>

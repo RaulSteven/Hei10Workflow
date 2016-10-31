@@ -1,0 +1,23 @@
+﻿@using System.Globalization
+@model PagedList.IPagedList<JR.Domain.Models.Article>
+@{
+    var i = 1;
+}
+
+@foreach (var item in Model)
+{
+    var picList = (item.Pic??"").Split(',').Where(d => !string.IsNullOrEmpty(d)).Take(4).ToList();
+    <dl class="project-list @(i == Model.Count() ? "last-project":"")">
+        <dt><a href="@Url.ArticleDetail(item.Id)" title="@item.Title">@item.Title</a></dt>
+        <dd>
+            <div class="pic">
+                @foreach (var pic in picList)
+                {
+                    <a href="@Url.ArticleDetail(item.Id)" title="@item.Title"><img src="@Url.ThumbUrl(pic, "200x200")" alt="@item.Title" title="@item.Title" /></a>
+                }
+            </div>
+            <div class="text"><a href="@Url.ArticleDetail(item.Id)" title="@item.Title">@item.ArticleContent.NoHtml().ToEllipsis(300)</a></div>
+        </dd>
+    </dl>
+    i++;
+}

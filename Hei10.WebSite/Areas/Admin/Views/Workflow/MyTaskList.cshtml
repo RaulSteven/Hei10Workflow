@@ -1,0 +1,42 @@
+﻿@model PagedList<WfActivityInstance>
+
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@Url.Action("MyTaskList")" method="get">
+        <input type="hidden" name="pageSize" value="@Model.PageSize">
+        <input type="hidden" name="pageCurrent" value="@Model.PageNumber">
+        <input type="hidden" name="tabId" value="@Request["tabId"]" />
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%"  data-nowrap="true">
+        <thead>
+            <tr>
+                <th>实例名称</th>
+                <th>活动名称</th>
+                <th>活动状态</th>
+                <th>任务开始时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-id="@(item.Id)">
+                    <td>@item.ProcessName</td>
+                    <td>@item.ActivityName</td>
+                    <td>@item.ActivityState.GetDescriotion()</td>
+                    <td>@item.CreateTime.ToDisplayDateTime()</td>
+                    <td>
+                        <a href="@Url.ShowFlowActivityList(item.ProcessInstanceId)" data-toggle="dialog" data-width="800" data-height="400" class="btn btn-blue" data-icon="list-alt">过程查看</a>
+                        <a href="@Url.FlowProcessing(item.ProcessInstanceId)" data-toggle="dialog" data-width="800" data-height="500" class="btn btn-green" data-icon="sitemap">流程图</a>
+                        <a href="@Url.Action("DealActivity","Workflow",new { proInsId=item.ProcessInstanceId,actInsId=item.Id,tabId = Request["tabId"]})" data-toggle="navtab" data-id="dealActivity" data-title="处理流程" class="btn btn-red" data-icon="hand-paper-o">处理</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+@Html.Partial("_Footer_Pager", Model)
+
+

@@ -1,0 +1,49 @@
+@charset "utf-8";
+
+/***
+Dashboard stats
+***/
+
+.stats-overview-cont {
+  padding-top:0px;
+  margin-bottom: 15px;
+} 
+.stats-overview {
+  clear: both;
+  padding: 10px 10px 0px 10px;
+  margin: 0px;
+  margin-bottom: 5px;
+}
+
+.stats-overview .display {
+  margin-right: 5px;
+  float: left;
+}
+
+.stats-overview .details {
+  color:#888;  
+}
+
+.stats-overview .details .title {
+  color: #777;
+  font-size: 14px;
+  font-weight: normal;
+  margin-bottom: 3px;
+}
+.stats-overview .details .title i {
+  color: #999;
+  margin-right: 2px;
+}
+.stats-overview .details .numbers {
+  color: #777;
+  font-size: 20px;
+  font-weight: 300;
+  margin-bottom: 6px;
+}
+.stats-overview .progress {
+  height: 10px;
+  margin-bottom:10px !important; 
+  background: #e6e6e6;
+}
+
+

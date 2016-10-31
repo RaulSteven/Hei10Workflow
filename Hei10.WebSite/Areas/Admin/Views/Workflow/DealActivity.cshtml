@@ -1,0 +1,125 @@
+﻿@model DealActivityViewModel
+
+<script>
+    var tabId = '@Request["tabId"]';
+    function DealActivity_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('closeCurrentTab')
+            .navtab('switchTab', tabId)// 刷新列表页
+            .navtab('refresh', tabId);// 刷新列表页
+
+        }
+    };
+
+    var validateComment = function () {
+        var validateResult = true;
+        $.CurrentNavtab.find('#txtComment').on('invalid.field', function (e, form) {
+            validateResult = false;
+        }).trigger("validate");
+        return validateResult;
+    };
+
+    //发送
+    $.CurrentNavtab.find('#btnSend').bind('click', function () {
+        var validateResult = validateComment();
+        if (!validateResult) {
+            return;
+        }
+        var url = '@Url.Action("FlowStepSelect", "Workflow")' +
+            '?type=@WfActivityType.Task' +
+            '&processId=@Model.ProcessInstance.WfProcessId' +
+            '&conditions=@Model.ProcessInstance.Conditions' +
+            '&currActId=@Model.ActivityInstance.ActivityGuid' +
+            '&proInsId=@Model.ProcessInstance.Id';
+
+        $('#ClickButton').val('@WfActivityButton.Send');
+        $(this).lookup({ id: 'flowStepSelect', url: url, title: '选择步骤和人员' });
+    });
+
+    $.CurrentNavtab.find('#AssignToUserNames').on('afterchange.bjui.lookup', function () {
+        $.CurrentNavtab.find('#formDealActivity').trigger("submit");
+    });
+
+    $.CurrentNavtab.find('#btnComplete').bind('click', function () {
+        $('#ClickButton').val('@WfActivityButton.Complete');
+        $.CurrentNavtab.find('#formDealActivity').trigger("submit");
+    });
+
+
+    $.CurrentNavtab.find('#btnFallBack').bind('click', function () {
+        var validateResult = validateComment();
+        if (!validateResult) {
+            return;
+        }
+        var url = '@Url.Action("BackStepSelect", "Workflow")' +
+            '?actInsId=@Model.ActivityInstance.Id' +
+            '&proInsId=@Model.ProcessInstance.Id';
+
+        $('#ClickButton').val('@WfActivityButton.FallBack');
+        $(this).lookup({ id: 'backStepSelect', url: url, title: '选择退回步骤' });
+    });
+
+    $.CurrentNavtab.find('#BackStepId').on('afterchange.bjui.lookup', function () {
+        $.CurrentNavtab.find('#formDealActivity').trigger("submit");
+    });
+</script>
+
+<div class="bjui-pageHeader">
+    <div class="btn-group" role="group">
+        <a href="@Url.FlowProcessing(Model.ProcessInstance.Id)" data-toggle="dialog" data-width="800" data-height="500" class="btn btn-blue"  data-icon="sitemap">查看流程图</a>
+        <button type="button" data-url="@Url.ShowFlowActivityList(Model.ProcessInstance.Id)" data-toggle="dialog" data-width="800" data-height="400" class="btn btn-green" data-icon="list-alt">过程查看</button>
+    </div>
+    <div class="btn-group" role="group">
+        @if (Model.Buttons.HasFlag(WfActivityButton.FallBack))
+        {
+            <button type="button" id="btnFallBack" class="btn btn-red" data-icon="undo">回退</button>
+        }
+        @if (Model.Buttons.HasFlag(WfActivityButton.Send))
+        {
+            <button type="button" id="btnSend" class="btn btn-orange" data-icon="send">发送</button>
+        }
+        @if (Model.Buttons.HasFlag(WfActivityButton.Complete))
+        {
+            <button type="button" id="btnComplete" class="btn btn-blue" data-icon="check">完成</button>
+        }
+    </div>
+</div>
+<div class="bjui-pageContent">
+    @Html.Partial("ShowSource",Model)
+    <form action="@Url.Action("DealActivity")" style="margin-top:10px;margin-bottom:10px" method="post" id="formDealActivity" class="pageForm" data-callback="DealActivity_callback" data-toggle="validate" data-alertmsg="false">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ProcessInstanceId" value="@Model.ActivityInstance.ProcessInstanceId" />
+        <input type="hidden" name="ActivityInstanceId" value="@Model.ActivityInstance.Id" />
+        <input type="hidden" name="ClickButton" id="ClickButton" />
+        <input type="hidden" name="NextStepId" id="NextStepId" />
+        <input type="hidden" name="AssignToUserIds" id="AssignToUserIds" />
+        <input type="hidden" name="AssignToUserNames" id="AssignToUserNames" />
+        <input type="hidden" name="BackStepId" id="BackStepId" />
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td align="center"><h3>审核意见</h3></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="txtComment" class="control-label x85">处理意见：</label>
+                        <textarea cols="30" id="txtComment" name="Comment" class="form-control" data-rule="required;length[~250]" style="width: 500px; margin: 0px; height: 46px;"></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    @Html.Partial("_DealActivityList",Model.DealActivityList)
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close">关闭</button></li>
+    </ul>
+</div>
+

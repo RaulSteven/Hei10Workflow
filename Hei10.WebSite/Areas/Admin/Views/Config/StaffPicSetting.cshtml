@@ -1,0 +1,93 @@
+﻿@model StaffPicModel
+<script>
+    function doc_upload_success(file, data) {
+        var picListValue = $('#StaffPic').val();
+        var $ulImgList = $('.ul-imglist');
+        var json = $.parseJSON(data);
+        $(this).bjuiajax('ajaxDone', json);
+        if (json[BJUI.keys.statusCode] == BJUI.statusCode.ok) {
+            var imgSrc = getImageThumbUrl(json.base64Path, "100x100");
+            var liHtml = '<li><img src="' + imgSrc + '">' +
+                '<input type="button" class="btn btn-red"  value="删除" onclick="doRemoveItem(this)" data-path="' + json.filePath + '"/></li>';
+            $ulImgList.append(liHtml);
+            if (picListValue) {
+                picListValue += '|';
+            }
+            picListValue += json.filePath;
+            $('#StaffPic').val(picListValue);
+        }
+    }
+    var doRemoveItem = function (btn) {
+        var $btnDel = $(btn);
+        var imgPath = $btnDel.attr('data-path');
+        var picListValue = $('#StaffPic').val();
+        var picListArr = picListValue.split('|');
+        var picListLength = picListArr.length;
+        for (var i = 0; i < picListLength; i++) {
+            if (picListArr[i] == imgPath) {
+                picListArr.splice(i, 1);
+                break;
+            }
+        }
+        $('#StaffPic').val(picListArr.join('|'));
+        delete picListArr;
+        picListArr = null;
+
+        $btnDel.parent().remove();
+    };
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('refresh', ''); 
+        }
+
+    }
+</script>
+
+<div class="bjui-pageContent">
+    <form action="@Url.Action("StaffPicSetting")" id="StaffPicSetting" data-callback="button_callback" data-toggle="validate" data-alertmsg="false">
+        @Html.AntiForgeryToken()
+        <div class="imglist">
+            <div class="p10">
+                <div style="display:inline-block; vertical-align:middle;">
+                    <div id="doc_pic_up" data-toggle="upload" data-uploader="@Url.Action("BatchUpload","Attachment",new { src = TableSource.SysConfigures })"
+                         data-file-size-limit="1024000000"
+                         data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                         data-multi="true"
+                         data-auto="true"
+                         data-on-upload-success="doc_upload_success"
+                         data-icon="cloud-upload"></div>
+                    @Html.HiddenFor(m => m.StaffPic,new { @data_rule= "员工图片:required" })
+                    @Html.ValidationMessageFor(m => m.StaffPic)
+                </div>
+            </div>
+            <ul class="ul-imglist">
+                @if (!string.IsNullOrEmpty(Model.StaffPic))
+            {
+                var picList = Model.StaffPic.Split('|').Where(d => !string.IsNullOrEmpty(d));
+                foreach (var picUrl in picList)
+                {
+                    <li>
+                        <img src="@Url.ThumbUrl(picUrl, "100x100")" alt="">
+                        <input type="button" class="btn btn-red" value="删除"  onclick="doRemoveItem(this)" data-path="@picUrl"/>
+                        </li>
+                    }
+                }
+            </ul>
+
+
+        </div>
+    </form>
+</div>
+
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+        <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+    </ul>
+</div>

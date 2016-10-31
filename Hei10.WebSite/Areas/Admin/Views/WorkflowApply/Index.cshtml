@@ -1,0 +1,63 @@
+﻿@model WfApplyBase
+
+<script>
+
+    function apply_workflow_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .navtab('closeCurrentTab');
+        }
+    };
+
+    $.CurrentNavtab.find('#btnApply').bind('click', function () {
+        var validateResult = true;
+        $.CurrentNavtab.find('#formApplyWorkflow .inputValidate').on('invalid.field', function (e, form) {
+            validateResult = false;
+        }).trigger("validate");
+        if (!validateResult) {
+            return;
+        }
+        var url = '@Url.Action("FlowStepSelect", "Workflow")' +
+            '?type=@WfActivityType.Start' +
+            '&processId=@Model.ProcessId'+
+            '&proInsId=@Model.ProcessInstanceId';
+
+        var conditions = getConditions();
+        if (conditions) {
+            url += '&conditions=' + conditions;
+        }
+
+        $(this).lookup({ id: 'flowStepSelect', url: url, title: '选择步骤和人员' });
+    });
+
+    var getConditions = function(){
+        return '';
+    };
+
+    $.CurrentNavtab.find('#AssignToUserNames').on('afterchange.bjui.lookup', function () {
+        $.CurrentNavtab.find('#formApplyWorkflow').trigger("submit");
+    });
+
+</script>
+
+<div class="bjui-pageHeader">
+    <a href="javascript:;" id="btnApply" class="btn btn-green" data-icon="plus">申请</a>
+</div>
+<div class="bjui-pageContent">
+    <form action="@Url.Action("Apply"+Model.TableSource)" style="margin-bottom:10px" method="post" id="formApplyWorkflow" class="pageForm"  data-callback="apply_workflow_callback" data-toggle="validate" data-alertmsg="false"  >
+        @Html.AntiForgeryToken()
+        @Html.Partial("_Workflow_Apply_Hidden_Base",Model)
+        @Html.Partial("_"+Model.TableSource, Model)
+    </form>
+    @Html.Partial("_DealActivityList", Model.DealActivityList)
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close">关闭</button></li>
+    </ul>
+</div>

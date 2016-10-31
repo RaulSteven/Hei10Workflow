@@ -1,0 +1,9 @@
+﻿@using System.Globalization
+@model PagedList.IPagedList<JR.Domain.Models.Article>
+@foreach (var item in Model)
+{
+    <li>
+        <div class="time"><p>@(item.ArticleDateTime.ToString("MMM,yyyy", DateTimeFormatInfo.InvariantInfo))</p><span>@item.ArticleDateTime.Month</span></div>
+        <div class="new"><a href="@Url.ArticleDetail(item.Id)" title="@item.Title">@item.Title</a></div>
+    </li>
+}

@@ -1,0 +1,66 @@
+﻿@model JR.WebSite.Models.ConsultModel
+@{
+    ViewBag.Title = Model.ConsultClassifyTitle;
+    Layout = "~/Views/Shared/_Layout_Menu.cshtml";
+}
+@section menuFootJs{ 
+    <script src="~/Res/home/js/jquery.validate.min.js"></script>
+    <script src="~/Res/home/js/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Res/libs/layer/layer.js"></script>
+    <script type="text/javascript" language="javascript">
+        if ('@Model.IsSucceed' == 'True') { 
+            layer.msg('操作成功！');
+            $('.input-text-default,.input-textarea-default').val('');
+        }
+    </script>
+}
+<div class="box-main">
+    <div class="text">
+        @Html.Raw(Model.ConsultClassifyContents)
+    </div>
+    <ul class="manage-list">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ClassifyId)
+            @Html.HiddenFor(m => m.ConsultClassifyTitle)
+            @Html.HiddenFor(m => m.ConsultClassifyContents) 
+            <li>
+                <span>留言标题：</span>
+                <div class="form-text">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "input-text-default w-half" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            </li>
+            <li>
+                <span class="text-nr">留言内容：</span>
+                <div class="form-text">
+                    @Html.TextAreaFor(model => model.Contents, new { @class = "input-textarea-default w-half" })
+                    @Html.ValidationMessageFor(model => model.Contents) 
+                </div> 
+            </li>
+            <li>
+                <span>您的姓名：</span>
+                <div class="form-text">
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "input-text-default w-half" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                </div>
+            </li>
+            <li>
+                <span>联系电话：</span>
+                <div class="form-text">
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "input-text-default w-half" })
+                    @Html.ValidationMessageFor(model => model.Phone)
+                </div>
+            </li>
+            <li>
+                <span>电子邮件：</span>
+                <div class="form-text">
+                    @Html.TextBoxFor(model => model.Email, new { @class = "input-text-default w-half" })
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+            </li>
+            <li><input type="submit" value="提交" class="input-submit-default w200 ml90"></li>
+        } 
+    </ul> 
+</div>

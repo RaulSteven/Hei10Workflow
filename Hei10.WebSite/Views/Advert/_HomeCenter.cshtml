@@ -1,0 +1,37 @@
+﻿@model AdvertDisplayModel 
+@if (Model != null && Model.Adverts != null && Model.Adverts.Any())
+{
+    var i = 1;
+    var className = "one";
+    <div class="box-list">
+        <ul class="clearfix">
+           @foreach (var advert in Model.Adverts)
+           {
+               if (!advert.IsNormal() || i > 4)
+               {
+                   continue;
+               }
+               var brank = "";
+               if (!string.IsNullOrEmpty(advert.LinkUrl) && advert.LinkUrl != "javascript:;" && advert.Target == Target.Blank)
+               {
+                   brank = "target=_brank";
+               }
+               switch (i)
+               {
+                   case 2:
+                       className = "two";
+                       break;
+                   case 3:
+                       className = "three";
+                       break;
+                   case 4:
+                       className = "four";
+                       break;
+               }
+               <li class="@className"><a href="@advert.LinkUrl.ToUrl()"  @(brank)><span><img src="@Url.GetFileUrl(advert.ImgUrl)" alt=""></span><span class="mt10">@advert.Name</span></a></li>
+               i++;
+           } 
+        </ul>
+    </div> 
+}
+

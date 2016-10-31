@@ -1,0 +1,157 @@
+﻿@using Hei10.Core.Extensions
+@using Hei10.Core.Utilities
+@using Hei10.Domain.Enums
+@using Hei10.Web.Framework.Extensions
+@model Advert
+    @{
+        string tabId = Request["tabId"];
+    }
+<script type="text/javascript">
+    function doc_upload_success(file, data) {
+        var json = $.parseJSON(data);
+        $(this).bjuiajax('ajaxDone', json);
+        if (json[BJUI.keys.statusCode] == BJUI.statusCode.ok) {
+            $('#ImgUrl').val(json.filePath);
+            $('#doc_span_pic').html('已上传图片：<img src="' + json.imgPath + '" width="100">');
+        }
+    }
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+                .bjuiajax('ajaxDone', json) // 信息提示
+                .navtab('closeCurrentTab')
+                .bjuiajax('refreshDiv', 'advertlist')
+                .navtab('switchTab','@tabId');
+        }
+
+    }
+</script>
+@using (Html.BeginForm("AdvertEdit", "Advert", FormMethod.Post, new { @data_toggle = "validate", @data_alertmsg = "false", @data_callback = "button_callback", @data_confirmMsg = "确定提交吗？" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Partial("_Edit_Hidden_Base")
+    @Html.HiddenFor(m => m.AdPosId)
+    <div class="bjui-pageContent">
+        <table class="table-bordered table-condensed table-hover" width="100%">
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Name, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "input-lg w500", @data_rule = "required;length[~50]" })
+                        @Html.ValidationMessageFor(m => m.Name)
+                        必填，最多50个字符。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.StartTime, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.StartTime, new { @data_toggle = "datepicker", @data_pattern = "yyyy-MM-dd HH:mm", @data_rule = "required" })
+                        @Html.ValidationMessageFor(m => m.StartTime)
+                        必填，如：2009-05-20 14:00。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.EndTime, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.EndTime, new { @data_toggle = "datepicker", @data_pattern = "yyyy-MM-dd HH:mm" })
+                        @Html.ValidationMessageFor(m => m.EndTime)
+                        如：2009-05-20 14:00,可以不填，不填表示广告无期。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.AdvertStatus, new { @class = "control-label x85" })
+                        @Html.RadioButtonList("AdvertStatus", AdvertStatus.Draft.GetSList(), Model.AdvertStatus)
+                        @Html.ValidationMessageFor(m => m.AdvertStatus)
+                        必选，仅有发布“状态”的广告才能前台展示。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Target, new { @class = "control-label x85" })
+                        @Html.RadioButtonList("Target", Target.Blank.GetSList(), Model.Target)
+                        @Html.ValidationMessageFor(m => m.Target)
+                        必选，点击广告后，是弹出新窗口还是在原窗口调整，一般选择“新窗口”。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.LinkUrl, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.LinkUrl, new { @size = "50", @data_rule = "required;length[~255]" })
+                        @Html.ValidationMessageFor(m => m.LinkUrl)
+                        必填，最多255个字符，如:http://www.baidu.com,没有链接就填:“javascript:;” （链接窗口选择“原窗口”）。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.AdType, new { @class = "control-label x85" })
+                        @Html.RadioButtonList("AdType", AdvertType.Html.GetSList(), Model.AdType)
+                        @Html.ValidationMessageFor(m => m.AdType)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.SortIndex, new { @class = "control-label x85" })
+                        @Html.TextBoxFor(m => m.SortIndex, new { @size = "20", @data_rule = "required;digits;" })
+                        @Html.ValidationMessageFor(m => m.SortIndex)
+                        必填，数字越小越靠前
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="" class="control-label x85">@Html.DisplayNameFor(m => m.ImgUrl)：</label>
+                        <div style="display: inline-block; vertical-align: middle;">
+                            <div id="doc_pic_up" data-toggle="upload" data-uploader="@Url.Action("BatchUpload", "Attachment", new {src = TableSource.Adverts})"
+                                 data-file-size-limit="1024000000"
+                                 data-file-type-exts="*.jpg;*.png;*.gif;*.mpg"
+                                 data-multi="false"
+                                 data-on-upload-success="doc_upload_success"
+                                 data-icon="cloud-upload"></div>
+                            @Html.HiddenFor(m => m.ImgUrl)
+                            @Html.ValidationMessageFor(m => m.ImgUrl)
+                        </div>
+                        <span id="doc_span_pic">
+                            @if (!string.IsNullOrEmpty(Model.ImgUrl))
+                            {
+                                <img src="@Url.ThumbUrl(Model.ImgUrl, "100x100")" alt="" width="100" style="margin-top: 10px;" />
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.TextContent, new { @class = "control-label x85" })
+                        @Html.TextAreaFor(m => m.TextContent, 20, 70, new { @data_rule = "length[~255]" })
+                        @Html.ValidationMessageFor(m => m.TextContent)
+                        可不填，最多225个字符。
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.MetaContent, new { @class = "control-label x85" })
+                        <div style="display: inline-block; vertical-align: middle;">
+                            @Html.TextAreaFor(m => m.MetaContent, new
+                            {
+                                @data_toggle = "kindeditor",
+                                @data_min_height = "500",
+                                @data_allow_file_manager = "false",
+                                @data_upload_json = Url.Action("KindEditorUpload", "Attachment", new {src = TableSource.Adverts}),
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.MetaContent)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bjui-pageFooter">
+        <ul>
+            <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+            <li><button type="submit" class="btn-default" data-icon="save">保存</button></li>
+        </ul>
+    </div>
+}

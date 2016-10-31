@@ -1,0 +1,115 @@
+﻿<script type="text/javascript">
+    $(function () {
+        $('#DealType').live('change',function() {
+            if ($(this).val() == @WfActivityDealType.Role.ToShort()) {
+                $('.rowRoles').show();
+            }else {
+                $('.rowRoles').hide();
+            }
+        });
+
+        $('#BackType').live('change',function() {
+            if ($(this).val() == @WfActivityBackType.OtherStep.ToShort()) {
+                $('.rowOtherStep').show();
+                initBackSteps(window.gNodeData.key);
+            }else {
+                $('.rowOtherStep').hide();
+            }
+        });
+
+        if (window.gNodeData) {
+            var nodeData = window.gNodeData;
+            $('#base_ID').val(nodeData.key);
+            $('#base_Name').val(nodeData.text);
+            $('#base_Remark').val(nodeData.remark);
+            $('#base_RoleIds').val(nodeData.roleIds);
+            $('#base_RoleNames').val(nodeData.roleNames);
+            $('#DealType').val(nodeData.dealType).change();
+            $('#BackType').val(nodeData.backType).change();
+            $('#BackStep').val(nodeData.backStep);
+        }
+    });
+
+    var saveData = function() {
+        var nodeData = window.gNodeData;
+        nodeData.key = $('#base_ID').val();
+        nodeData.text = $('#base_Name').val();
+        nodeData.remark = $('#base_Remark').val();
+        nodeData.roleIds = $('#base_RoleIds').val();
+        nodeData.roleNames = $('#base_RoleNames').val();
+        nodeData.dealType = $('#DealType').val();
+        nodeData.backType = $('#BackType').val();
+        nodeData.backStep = $('#BackStep').val();
+        window.gNodeData = nodeData;
+
+        closeCurrDlg();
+    };
+
+    var doOpenDialog = function(obj, url, title) {
+        $(obj).dialog({
+            id: 'mydialog', url: url, title: title, width: 600, height: 400,
+            onClose: function () {
+                $('#base_RoleIds').val(window.gNodeData.roleIds);
+                $('#base_RoleNames').val(window.gNodeData.roleNames);
+        }});
+    };
+
+    var initBackSteps = function(currStep) {
+        $('#BackStep').html('');
+        myDiagram.nodes.each(function(node) {
+            if (node.data.key === currStep || node.data.activityType != 2) return true;
+            $('#BackStep').append('<option value="'+ node.data.key + '">' + node.data.text + '</option>');
+        });
+    };
+</script>
+<div class="bjui-pageContent">
+    <form  data-toggle="validate">
+        <div style="margin:15px auto 0; width:100%;height: 99%;">
+            <table class="table-bordered table-condensed table-hover" style="width: 100%;">
+                <tr>
+                    <th style="width:20%;" align="right">步骤ID：</th>
+                    <td><input type="text" id="base_ID" name="base_ID" readonly="readonly" value="" class="input-nm" style="width:75%" /></td>
+                </tr>
+                <tr>
+                    <th align="right">步骤名称：</th>
+                    <td><input type="text" id="base_Name" name="base_Name" value="" class="input-nm" style="width: 75%" data-rule="required;"/></td>
+                </tr>
+                <tr>
+                    <th align="right">处理者类型：</th>
+                    <td>
+                        <div style="float: left;">
+                            @Html.DropDownList("DealType", WfActivityDealType.Creater.GetSListInt(), new { @class = "input-nm", @style = "height: 25px;", @data_rule = "required;", @placeholder = "处理者类型" })
+                        </div>
+                        <div class="rowRoles" style="display: none;">
+                            @Html.Hidden("base_RoleIds")
+                            ：<input type="text" id="base_RoleNames" readonly="readonly" onclick="javascript: doOpenDialog(this, '@Url.Action("SetRole")', '选择角色');" value="" name="base_RoleNames" class="input-nm" style="height: 25px;width: 60%" />
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th align="right">退回类型：</th>
+                    <td>
+                        <div style="float: left;">
+                            @Html.DropDownList("BackType", WfActivityBackType.PreStep.GetSListInt(), new { @class = "input-nm", @style = "height: 25px;", @data_rule = "required;", @placeholder = "处理者类型" })
+                        </div>
+                        <div class="rowOtherStep" style="display: none;">
+                            ：<select class="input-nm ok" id="BackStep" name="BackStep" placeholder="处理者类型" style="height: 25px;"></select>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th align="right">备注：</th>
+                    <td><textarea rows="4" cols="40" id="base_Remark" name="base_Note" value=""></textarea></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-save" data-icon="save" onclick="saveData()">保存</button></li>
+        <li><button type="button" class="btn-close" data-icon="close">关闭</button></li>
+    </ul>
+</div>

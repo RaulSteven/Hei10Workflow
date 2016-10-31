@@ -1,0 +1,61 @@
+﻿@model PagedList<WfProcessInstance>
+@{
+    string url = (string)ViewData["url"];
+    DateTime? startTime = ViewBag.startTime;
+    DateTime? endTime = ViewBag.endTime;
+}
+
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="@url" method="get">
+        <input type="hidden" name="pageSize" value="@Model.PageSize">
+        <input type="hidden" name="pageCurrent" value="@Model.PageNumber">
+        <input type="hidden" name="tabId" value="@Request["tabId"]"/>
+        <input type="hidden" name="orderField" value="@Request["orderField"]">
+        <input type="hidden" name="orderDirection" value="@Request["orderDirection"]">
+        <div class="bjui-searchBar">
+            <label>申请者：</label><input type="text" value="@Request["name"]" name="name" class="form-control" size="15">&nbsp;
+            <label>流程名称：</label><input type="text" value="@Request["title"]" name="title" class="form-control" size="15">&nbsp;
+            <label>&nbsp;申请时间:</label>
+            <input type="text" value="@startTime" name="startTime" size="20" data-toggle="datepicker" data-pattern="yyyy-MM-dd HH:mm:ss"> 至
+            <input type="text" value="@endTime" name="endTime" size="20" data-toggle="datepicker" data-pattern="yyyy-MM-dd HH:mm:ss">
+            <label>&nbsp;状态:</label>
+            @Html.DropDownList("state", WfProcessState.Canceled.GetSList(), "全部")
+            <label>步骤：</label><input type="text" value="@Request["activityName"]" name="activityName" class="form-control" size="15">&nbsp;
+             <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>申请者</th>
+                <th>流程名称</th>
+                <th data-order-field="CreateTime" align="center">创建时间</th>
+                <th>运行状态</th>
+                <th>当前步骤</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-id="@(item.Id)">
+                    <td>@item.CreateUserName</td>
+                    <td>@item.ProcessName</td>
+                    <td>@item.CreateTime.ToDisplayDateTime()</td>
+                    <td>@item.ProcessState.GetDescriotion()</td>
+                    <td>@item.CurrActivityName</td>
+                    <td>
+                        <a href="@Url.ShowFlowActivityList(item.Id)" data-toggle="dialog" data-width="800" data-height="400" class="btn btn-blue" data-icon="list-alt">过程查看</a>
+                        <a href="@Url.FlowProcessing(item.Id)" data-toggle="dialog" data-width="800" data-height="500" class="btn btn-green" data-icon="sitemap">流程图</a>
+                        <a href="@Url.Action("ApplyInfo", "Workflow", new {src = item.TableSource, srcId = item.SourceId})" data-toggle="dialog" data-width="800" data-height="400" class="btn btn-red" data-icon="eyedropper">申请信息</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+@Html.Partial("_Footer_Pager", Model)

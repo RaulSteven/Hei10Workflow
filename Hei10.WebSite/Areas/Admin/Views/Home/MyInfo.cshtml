@@ -1,0 +1,16 @@
+﻿@model MyInfoModel
+<div class="bjui-pageContent">
+
+    <div>
+        <fieldset>
+            <legend>任务操作</legend>
+            <!-- Tabs -->
+            <a href="@Url.Action("Index", "WorkflowApply",new { src=TableSource.LeaveInfo})" class="btn btn-green" data-icon="calendar-check-o" data-toggle="navtab" data-id="leaveInfo-apply" data-title="申请假期">申请假期</a>
+            <a href="@Url.Action("Index", "WorkflowApply",new { src=TableSource.SealInfo})" class="btn btn-blue" data-icon="calendar-check-o" data-toggle="navtab" data-id="sealInfo-apply" data-title="盖章申请">盖章申请</a>
+            <a href="@Url.Action("Index", "WorkflowApply",new { src=TableSource.MeetingRoomInfo})" class="btn btn-red" data-icon="calendar-check-o" data-toggle="navtab" data-id="sealInfo-apply" data-title="会议室使用申请">会议室使用申请</a>
+        </fieldset>
+    </div>
+</div>
+<div class="bjui-pageFooter">
+
+</div>

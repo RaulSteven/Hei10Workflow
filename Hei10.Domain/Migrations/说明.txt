@@ -1,0 +1,8 @@
+﻿1、Migration命名规则：操作人名称+功能描述+月份日期，如：StevenUpdateProject0506
+2、添加命令：Add-Migration StevenUpdateProject0506
+3、更新到数据库的名称：Update-Database
+4、生成脚本：  Update-Database -Script -SourceMigration: 201505060152412_ShawnAddProject0506 -TargetMigration: 201505060249584_ShawnUpdateProject0506
+5、脚本更新历史：
+3)、Update-Database -Script -SourceMigration: tIndex0507 -TargetMigration: tBook0508
+6、回滚到某个版本：
+4)、Update-Database  -TargetMigration: 201505110344538_KantAddAdvertSortIndex0511

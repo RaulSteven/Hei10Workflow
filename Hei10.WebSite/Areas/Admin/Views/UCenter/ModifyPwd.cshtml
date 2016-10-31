@@ -1,0 +1,54 @@
+﻿@model ModifyPwdModel
+<script>
+
+    function button_callback(json) {
+        if (json.Error) {
+            for (var i = 0; i < json.Error.length; i++) {
+                $('#' + json.Error[i].Key).next('span').html('<span class="msg-box n-right" style="" for="' + json.Error[i].Value + '"><span class="msg-wrap n-error" role="alert" style="left: 0px; opacity: 1;"><span class="n-arrow"><b>◆</b><i>◆</i></span><span class="glyphicon glyphicon-remove-circle" style="top: -1px; font-size: 14px; vertical-align: middle;"></span><span class="n-msg">' + json.Error[i].Value + '</span></span></span></span>').show();
+            }
+        } else {
+            $(this)
+            .bjuiajax('ajaxDone', json) // 信息提示
+            .dialog('closeCurrent');
+        }
+    };
+</script>
+<div class="bjui-pageContent">
+    <form action="@Url.Action("ModifyPwd")" class="pageForm" data-callback="button_callback" data-toggle="validate" data-alertmsg="false">
+        @Html.AntiForgeryToken()
+        <table class="table table-condensed table-hover">
+            <tbody>
+                <tr>
+                    <td colspan="2" align="center"><h3>修改密码</h3></td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.OldPwssword, new { @class = "control-label x90" })
+                        @Html.PasswordFor(m => m.OldPwssword, new Dictionary<string, object> { { "size", 20 }, { "data-rule", "required" } })
+                        @Html.ValidationMessageFor(m => m.OldPwssword)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Password, new { @class = "control-label x90" })
+                        @Html.PasswordFor(m => m.Password, new Dictionary<string, object> { { "size", 20 }, { "data-rule", "required;length(6~16)" } })
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.PasswordConfirm, new { @class = "control-label x90" })
+                        @Html.PasswordFor(m => m.PasswordConfirm, new Dictionary<string, object> { { "size", 20 }, { "data-rule", "required;match(Password)" }, { "data-msg-match", "两次输入的密码不一致" } })
+                        @Html.ValidationMessageFor(m => m.PasswordConfirm)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close">关闭</button></li>
+        <li><button type="submit" class="btn-default">保存</button></li>
+    </ul>
+</div>

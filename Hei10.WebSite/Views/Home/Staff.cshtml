@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "员工天地";
+    string staff = ViewBag.staff;
+}
+@section menuFootJs
+{
+    <script src="/Res/home/js/masonry-docs.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var $container = $('#masonry');
+            $container.imagesLoaded(function () {
+                $container.masonry({
+                    itemSelector: '.box',
+                    gutter: 5,
+                    isAnimated: true,
+                });
+            });
+        });
+    </script>
+}
+<div class="staff-main">
+    <div class="main" id="main">
+        <div id="masonry" class="container-fluid">
+            @if (!string.IsNullOrEmpty(staff))
+            {
+                var picList = staff.Split('|').Where(d => !string.IsNullOrEmpty(d));
+                foreach (var picUrl in picList)
+                {
+                    <div class="box">
+                        <img src="@Url.FileUrl(picUrl)" alt="">
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+</div>
+

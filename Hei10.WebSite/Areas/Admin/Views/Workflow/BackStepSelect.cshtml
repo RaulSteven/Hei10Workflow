@@ -1,0 +1,31 @@
+﻿@model WfActivity
+
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true" id="selectButtons">
+        <thead>
+            <tr>
+                <th>步骤</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <label>
+                        <input type="radio" name="backStep" value="{BackStepId:'@Model.key'}" checked="checked" readonly="readonly" data-toggle="icheck" />
+                        @Model.text
+                    </label>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li>
+            <button type="button" class="btn-close">关闭</button>
+        </li>
+        <li>
+            <button type="button" class="btn-blue" data-toggle="lookupback" data-lookupid="backStep" data-warn="请至少选择一个按钮" data-icon="check-square-o">确定</button>
+        </li>
+    </ul>
+</div>
